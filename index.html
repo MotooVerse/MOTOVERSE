@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MotoVerse - Motorcycle Universe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap');
+
+    :root {
+      --primary: #ff6b35;
+      --secondary: #e91e63;
+      --bg-dark: #0f0f23;
+      --bg-mid: #1a1a2e;
+      --text-light: #ccc;
+      --glass: rgba(255, 255, 255, 0.15);
+      --border: rgba(255, 255, 255, 0.2);
+      --shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Rajdhani', sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .orbitron { font-family: 'Orbitron', sans-serif; }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .glass { background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .neon { text-shadow: 0 0 6px var(--primary); animation: neon 1.5s ease-in-out infinite alternate; }
+    @keyframes neon { to { text-shadow: 0 0 10px var(--primary), 0 0 15px var(--secondary); } }
+
+    .hover-lift {
+      transition: transform 0.2s ease;
+      will-change: transform;
+    }
+    .hover-lift:hover, .hover-lift:focus {
+      transform: translateY(-6px);
+      outline: none;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+      will-change: opacity, transform;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Loading Screen */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-dark);
+      display: grid;
+      place-content: center;
+      z-index: 1000;
+      transition: opacity 0.4s ease-out;
+    }
+    .loading-screen.hidden { opacity: 0; pointer-events: none; }
+    .loader {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--primary);
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 10px;
+      margin: 0 auto;
+      width: fit-content;
+      z-index: 100;
+      padding: 8px 15px;
+      border-radius: 25px;
+    }
+    nav ul {
+      display: flex;
+      gap: 12px;
+      list-style: none;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    nav a:hover, nav a.active, nav a:focus { color: var(--primary); outline: none; }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      min-height: 80vh;
+      display: grid;
+      place-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero picture::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
+      z-index: 1;
+    }
+    .hero img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.7;
+      transform: translateY(var(--parallax));
+      transition: transform 0.05s linear;
+      will-change: transform;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 20px;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; margin-bottom: 15px; }
+    .hero p { font-size: clamp(0.9rem, 1.5vw, 1.2rem); max-width: 500px; margin: 0 auto 20px; }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: var(--glass); color: var(--primary); border: 1px solid var(--primary); }
+    .btn:hover, .btn:focus { transform: translateY(-2px); box-shadow: var(--shadow); outline: none; }
+
+    /* Sections */
+    section {
+      padding: 60px 15px;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-light);
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto 30px;
+    }
+
+    /* Grid */
+    .grid { display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+    /* Cards */
+    .card {
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--glass);
+    }
+    .card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .card:hover img, .card:focus-within img { transform: scale(1.05); }
+    .card-content { padding: 15px; }
+    .card-title { font-size: 1.2rem; color: var(--primary); }
+    .card-desc { font-size: 0.9rem; color: var(--text-light); margin: 5px 0 10px; }
+    .card-specs { font-size: 0.8rem; color: var(--primary); }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      place-content: center;
+      z-index: 200;
+    }
+    .modal.active { display: grid; }
+    .modal-content {
+      background: var(--bg-dark);
+      border-radius: 15px;
+      max-width: 95vw;
+      max-height: 95vh;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    .modal-header {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title { font-size: 1.5rem; color: var(--primary); }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .modal-close:hover, .modal-close:focus { color: var(--secondary); outline: none; }
+    .modal-body { padding: 10px 0; }
+    .model-card { border-radius: 10px; overflow: hidden; }
+    .model-info { padding: 10px; }
+    .model-name { font-size: 1.1rem; color: var(--primary); }
+    .model-price { font-size: 0.9rem; margin: 5px 0; }
+    .model-specs { font-size: 0.8rem; }
+    .spec-item { display: flex; justify-content: space-between; margin: 3px 0; }
+    .spec-value { color: var(--primary); }
+
+    /* Footer */
+    footer {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 30px 15px;
+      text-align: center;
+    }
+    .footer-title { font-size: 1.5rem; }
+    .footer-desc { font-size: 0.9rem; color: var(--text-light); max-width: 400px; margin: 10px auto; }
+    .footer-links { display: flex; gap: 15px; justify-content: center; }
+    .footer-links a { color: var(--text-light); text-decoration: none; font-size: 0.9rem; }
+    .footer-links a:hover, .footer-links a:focus { color: var(--primary); outline: none; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav ul { gap: 8px; }
+      nav a { font-size: 0.8rem; }
+      .hero h1 { font-size: 2rem; }
+      .section-title { font-size: 1.8rem; }
+      .section { padding: 40px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-screen" id="loadingScreen">
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <div class="loader"></div>
+      <h1 class="orbitron">MotoVerse</h1>
+    </div>
+  </div>
+
+  <nav class="glass" role="navigation">
+    <ul>
+      <li><a href="#home" aria-label="Home">Home</a></li>
+      <li><a href="#bikes" aria-label="Bikes">Bikes</a></li>
+      <li><a href="#tech" aria-label="Technology">Tech</a></li>
+      <li><a href="#brands" aria-label="Brands">Brands</a></li>
+    </ul>
+  </nav>
+
+  <section id="home" class="hero" role="banner">
+    <picture>
+      <source srcset="https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=1200&q=80" type="image/webp">
+      <img src="https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=600&q=80" alt="KTM motorcycle in cityscape" loading="lazy">
+    </picture>
+    <div class="hero-content fade-in">
+      <h1 class="orbitron neon">MOTO<span class="gradient-text">VERSE</span></h1>
+      <p>Engineering meets adrenaline</p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <a href="#bikes" class="btn btn-primary" aria-label="Explore Bikes">Explore Bikes</a>
+        <a href="#tech" class="btn btn-secondary" aria-label="Latest Reviews">Reviews</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="bikes" class="section">
+    <h2 class="section-title orbitron fade-in"><span class="gradient-text">BIKES</span></h2>
+    <p class="section-subtitle fade-in">Find your ride</p>
+    <div class="grid">
+      <article class="card glass hover-lift fade-in" data-category="hypersport">
+        <img loading="lazy" src="https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=600&q=80" alt="Hypersport motorcycle">
+        <div class="card-content">
+          <h3 class="card-title orbitron">Hypersport</h3>
+          <p class="card-desc">Ultimate speed machines</p>
+          <div class="card-specs">300+ HP | 200+ MPH</div>
+          <button class="btn btn-primary" aria-label="Explore Hypersport Models">Explore</button>
+        </div>
+      </article>
+      <article class="card glass hover-lift fade-in" data-category="supernaked">
+        <img loading="lazy" src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80" alt="Supernaked motorcycle">
+        <div class="card-content">
+          <h3 class="card-title orbitron">Supernaked</h3>
+          <p class="card-desc">Raw power streetfighters</p>
+          <div class="card-specs">180+ HP</div>
+          <button class="btn btn-primary" aria-label="Explore Supernaked Models">Explore</button>
+        </div>
+      </article>
+      <article class="card glass hover-lift fade-in" data-category="adventure">
+        <img loading="lazy" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80" alt="Adventure motorcycle">
+        <div class="card-content">
+          <h3 class="card-title orbitron">Adventure</h3>
+          <p class="card-desc">Conquer any terrain</p>
+          <div class="card-specs">120+ HP | 600+ Miles</div>
+          <button class="btn btn-primary" aria-label="Explore Adventure Models">Explore</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="tech" class="section" style="background: rgba(0, 0, 0, 0.3);">
+    <h2 class="section-title orbitron fade-in"><span class="gradient-text">TECH</span></h2>
+    <p class="section-subtitle fade-in">Advanced systems</p>
+    <div class="grid">
+      <article class="card glass hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title orbitron">Cornering ABS</h3>
+          <p class="card-desc">Lean-sensitive braking</p>
+        </div>
+      </article>
+      <article class="card glass hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title orbitron">Traction Control</h3>
+          <p class="card-desc">AI-powered power</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="brands" class="section">
+    <h2 class="section-title orbitron fade-in"><span class="gradient-text">BRANDS</span></h2>
+    <p class="section-subtitle fade-in">Top manufacturers</p>
+    <div class="grid">
+      <article class="card glass hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title orbitron">KTM</h3>
+          <p class="card-desc">🇦🇹 Adventure & Racing</p>
+        </div>
+      </article>
+      <article class="card glass hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title orbitron">Ducati</h3>
+          <p class="card-desc">🇮🇹 Superbike Excellence</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <footer role="contentinfo">
+    <h3 class="footer-title orbitron fade-in"><span class="gradient-text">MOTO</span>VERSE</h3>
+    <p class="footer-desc fade-in">Motorcycle excellence</p>
+    <nav class="footer-links fade-in">
+      <a href="#reviews" aria-label="Reviews">Reviews</a>
+      <a href="#news" aria-label="News">News</a>
+    </nav>
+    <div class="footer-bottom">© 2025 MotoVerse</div>
+  </footer>
+
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <h2 id="modal-title" class="modal-title orbitron"></h2>
+        <button class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-models" class="grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const models = {
+      hypersport: {
+        title: "Hypersport",
+        items: [
+          { name: "KTM RC 390", price: "$5,500", image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=600&q=80", specs: { Engine: "373cc Single", Power: "43 HP" }, description: "Agile track bike" },
+          { name: "Ducati Panigale", price: "$40,000", image: "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?auto=format&fit=crop&w=600&q=80", specs: { Engine: "998cc V4", Power: "221 HP" }, description: "Ultimate track weapon" }
+        ]
+      },
+      supernaked: {
+        title: "Supernaked",
+        items: [
+          { name: "Ducati Streetfighter", price: "$28,000", image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80", specs: { Engine: "1103cc V4", Power: "208 HP" }, description: "Naked power" }
+        ]
+      },
+      adventure: {
+        title: "Adventure",
+        items: [
+          { name: "KTM 1290 Super Adventure", price: "$18,500", image: "https://images.unsplash.com/photo-1591202169949-296eaa48a5b7?auto=format&fit=crop&w=600&q=80", specs: { Engine: "1301cc V-Twin", Power: "160 HP" }, description: "Global explorer" }
+        ]
+      }
+    };
+
+    const $ = (sel, base = document) => base.querySelector(sel);
+    const $$ = (sel, base = document) => base.querySelectorAll(sel);
+
+    function openModal(category) {
+      const modal = $('#modal');
+      $('#modal-title').textContent = models[category].title;
+      $('#modal-models').innerHTML = models[category].items.map(item => `
+        <article class="model-card glass hover-lift">
+          <img loading="lazy" src="${item.image}" alt="${item.name}" style="width: 100%; height: 120px; object-fit: cover;">
+          <div class="model-info">
+            <h3 class="model-name orbitron">${item.name}</h3>
+            <div class="model-price">${item.price}</div>
+            <div class="model-specs">${Object.entries(item.specs).map(([k, v]) => `<div class="spec-item"><span>${k}:</span><span class="spec-value">${v}</span></div>`).join('')}</div>
+            <p class="model-description">${item.description}</p>
+          </div>
+        </article>
+      `).join('');
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      const modal = $('#modal');
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(() => $('#loadingScreen').classList.add('hidden'), 1000);
+
+      // Event delegation
+      document.addEventListener('click', e => {
+        const cardBtn = e.target.closest('.card button');
+        if (cardBtn) openModal(cardBtn.closest('.card').dataset.category);
+        else if (e.target.closest('.modal-close') || e.target === $('#modal')) closeModal();
+      });
+
+      document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+
+      // Intersection Observer for fade-in
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+          else entry.target.classList.remove('visible'); // Ensure fade out when out of view
+        });
+      }, { threshold: 0.3 });
+      $$('.fade-in').forEach(el => observer.observe(el));
+
+      // Enhanced parallax and navigation highlight
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const scrollY = window.scrollY;
+            const parallax = Math.min(scrollY * 0.5, 200); // Limit parallax movement
+            $('img').style.setProperty('--parallax', `${parallax}px`);
+            $$('nav a').forEach(link => {
+              const section = $(link.getAttribute('href'));
+              const rect = section.getBoundingClientRect();
+              link.classList.toggle('active', rect.top <= 50 && rect.bottom > 50);
+            });
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+
+      // Ensure buttons are clickable
+      $$('.btn').forEach(btn => {
+        btn.style.pointerEvents = 'auto';
+        btn.addEventListener('focus', () => btn.classList.add('hover-lift'));
+        btn.addEventListener('blur', () => btn.classList.remove('hover-lift'));
+      });
+    });
+  </script>
+</body>
+</html>
