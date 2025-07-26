@@ -23,12 +23,12 @@
       padding: 0;
       box-sizing: border-box;
       font-family: 'Rajdhani', sans-serif;
-      scroll-behavior: smooth;
     }
 
     body {
       background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
       color: white;
+      line-height: 1.6;
       overflow-x: hidden;
     }
 
@@ -41,30 +41,17 @@
     }
 
     .glass { background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(8px); }
-    .neon { text-shadow: 0 0 6px var(--primary); animation: neon 1.5s ease-in-out infinite alternate; }
-    @keyframes neon { to { text-shadow: 0 0 10px var(--primary), 0 0 15px var(--secondary); } }
-
-    .hover-lift {
-      transition: transform 0.2s ease;
-      will-change: transform;
-    }
-    .hover-lift:hover, .hover-lift:focus {
-      transform: translateY(-6px);
-      outline: none;
-    }
+    .neon { text-shadow: 0 0 6px var(--primary); }
+    .hover-lift { transition: transform 0.2s ease; }
+    .hover-lift:hover { transform: translateY(-6px); }
 
     .fade-in {
       opacity: 0;
       transform: translateY(40px);
       transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
-      will-change: opacity, transform;
     }
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-    /* Loading Screen */
     .loading-screen {
       position: fixed;
       inset: 0;
@@ -85,7 +72,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Navigation */
     nav {
       position: sticky;
       top: 10px;
@@ -104,27 +90,19 @@
       color: white;
       text-decoration: none;
       font-weight: 700;
-      font-size: 0.9rem;
       transition: color 0.2s ease;
     }
-    nav a:hover, nav a.active, nav a:focus { color: var(--primary); outline: none; }
+    nav a:hover { color: var(--primary); }
 
-    /* Hero */
-    .hero {
-      position: relative;
-      min-height: 80vh;
-      display: grid;
-      place-content: center;
-      text-align: center;
-      overflow: hidden;
+    .page {
+      display: none;
+      padding: 60px 15px;
+      max-width: 1000px;
+      margin: 0 auto;
     }
-    .hero picture::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
-      z-index: 1;
-    }
+    .page.active { display: block; }
+
+    .hero { min-height: 80vh; text-align: center; position: relative; }
     .hero img {
       position: absolute;
       inset: 0;
@@ -132,71 +110,26 @@
       height: 100%;
       object-fit: cover;
       opacity: 0.7;
-      transform: translateY(var(--parallax));
-      transition: transform 0.05s linear;
-      will-change: transform;
     }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      padding: 20px;
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
     }
-    .hero h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; margin-bottom: 15px; }
-    .hero p { font-size: clamp(0.9rem, 1.5vw, 1.2rem); max-width: 500px; margin: 0 auto 20px; }
-    .btn {
-      padding: 10px 20px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 0.9rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+    .hero-content { position: relative; z-index: 1; padding: 20px; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 15px; }
+    .hero p { max-width: 500px; margin: 0 auto 20px; }
+
+    .btn { padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 700; transition: transform 0.2s ease; }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-secondary { background: var(--glass); color: var(--primary); border: 1px solid var(--primary); }
-    .btn:hover, .btn:focus { transform: translateY(-2px); box-shadow: var(--shadow); outline: none; }
+    .btn:hover { transform: translateY(-2px); }
 
-    /* Sections */
-    section {
-      padding: 60px 15px;
-      max-width: 1000px;
-      margin: 0 auto;
-      position: relative;
-    }
-    .section-title {
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .section-subtitle {
-      font-size: 1rem;
-      color: var(--text-light);
-      text-align: center;
-      max-width: 500px;
-      margin: 0 auto 30px;
-    }
-
-    /* Grid */
     .grid { display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
-
-    /* Cards */
-    .card {
-      border-radius: 10px;
-      overflow: hidden;
-      background: var(--glass);
-    }
-    .card img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-    .card:hover img, .card:focus-within img { transform: scale(1.05); }
+    .card { border-radius: 10px; overflow: hidden; background: var(--glass); }
+    .card img { width: 100%; height: 150px; object-fit: cover; }
     .card-content { padding: 15px; }
-    .card-title { font-size: 1.2rem; color: var(--primary); }
-    .card-desc { font-size: 0.9rem; color: var(--text-light); margin: 5px 0 10px; }
-    .card-specs { font-size: 0.8rem; color: var(--primary); }
 
-    /* Modal */
     .modal {
       position: fixed;
       inset: 0;
@@ -206,31 +139,10 @@
       z-index: 200;
     }
     .modal.active { display: grid; }
-    .modal-content {
-      background: var(--bg-dark);
-      border-radius: 15px;
-      max-width: 95vw;
-      max-height: 95vh;
-      overflow-y: auto;
-      padding: 15px;
-    }
-    .modal-header {
-      padding: 10px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .modal-content { background: var(--bg-dark); border-radius: 15px; max-width: 95vw; max-height: 95vh; overflow-y: auto; padding: 15px; }
+    .modal-header { padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
     .modal-title { font-size: 1.5rem; color: var(--primary); }
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-    .modal-close:hover, .modal-close:focus { color: var(--secondary); outline: none; }
+    .modal-close { background: none; border: none; color: var(--primary); font-size: 1.2rem; cursor: pointer; }
     .modal-body { padding: 10px 0; }
     .model-card { border-radius: 10px; overflow: hidden; }
     .model-info { padding: 10px; }
@@ -240,25 +152,26 @@
     .spec-item { display: flex; justify-content: space-between; margin: 3px 0; }
     .spec-value { color: var(--primary); }
 
-    /* Footer */
-    footer {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 30px 15px;
-      text-align: center;
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: white;
     }
+    .form-group button { padding: 10px 20px; border-radius: 20px; background: var(--primary); border: none; color: white; cursor: pointer; }
+
+    footer { background: rgba(0, 0, 0, 0.6); padding: 30px 15px; text-align: center; }
     .footer-title { font-size: 1.5rem; }
     .footer-desc { font-size: 0.9rem; color: var(--text-light); max-width: 400px; margin: 10px auto; }
-    .footer-links { display: flex; gap: 15px; justify-content: center; }
-    .footer-links a { color: var(--text-light); text-decoration: none; font-size: 0.9rem; }
-    .footer-links a:hover, .footer-links a:focus { color: var(--primary); outline: none; }
 
-    /* Responsive */
     @media (max-width: 768px) {
       nav ul { gap: 8px; }
-      nav a { font-size: 0.8rem; }
       .hero h1 { font-size: 2rem; }
       .section-title { font-size: 1.8rem; }
-      .section { padding: 40px 10px; }
     }
   </style>
 </head>
@@ -270,110 +183,447 @@
     </div>
   </div>
 
-  <nav class="glass" role="navigation">
+  <nav class="glass">
     <ul>
-      <li><a href="#home" aria-label="Home">Home</a></li>
-      <li><a href="#bikes" aria-label="Bikes">Bikes</a></li>
-      <li><a href="#tech" aria-label="Technology">Tech</a></li>
-      <li><a href="#brands" aria-label="Brands">Brands</a></li>
+      <li><a href="#" data-page="home">Home</a></li>
+      <li><a href="#" data-page="royal-enfield">Royal Enfield</a></li>
+      <li><a href="#" data-page="bajaj-auto">Bajaj Auto</a></li>
+      <li><a href="#" data-page="hero-motocorp">Hero MotoCorp</a></li>
+      <li><a href="#" data-page="tvs-motor">TVS Motor</a></li>
+      <li><a href="#" data-page="mahindra">Mahindra</a></li>
+      <li><a href="#" data-page="bmw-motorrad">BMW Motorrad</a></li>
+      <li><a href="#" data-page="ktm">KTM</a></li>
+      <li><a href="#" data-page="reviews">Reviews</a></li>
+      <li><a href="#" data-page="ratings">Ratings</a></li>
+      <li><a href="#" data-page="pricing">Pricing</a></li>
+      <li><a href="#" data-page="comments">Comments</a></li>
+      <li><a href="#" data-page="contact">Contact</a></li>
     </ul>
   </nav>
 
-  <section id="home" class="hero" role="banner">
-    <picture>
-      <source srcset="https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=1200&q=80" type="image/webp">
-      <img src="https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=600&q=80" alt="KTM motorcycle in cityscape" loading="lazy">
-    </picture>
-    <div class="hero-content fade-in">
-      <h1 class="orbitron neon">MOTO<span class="gradient-text">VERSE</span></h1>
-      <p>Engineering meets adrenaline</p>
-      <div style="display: flex; gap: 10px; justify-content: center;">
-        <a href="#bikes" class="btn btn-primary" aria-label="Explore Bikes">Explore Bikes</a>
-        <a href="#tech" class="btn btn-secondary" aria-label="Latest Reviews">Reviews</a>
+  <div id="home" class="page active">
+    <section class="hero">
+      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" alt="Motorcycle on road" loading="lazy">
+      <div class="hero-content fade-in">
+        <h1 class="orbitron neon">MOTO<span class="gradient-text">VERSE</span></h1>
+        <p>Explore the finest Indian and German motorcycles!</p>
+        <a href="#" class="btn btn-primary" data-page="brands">Explore Now</a>
+      </div>
+    </section>
+  </div>
+
+  <div id="royal-enfield" class="page">
+    <h2 class="section-title orbitron fade-in">Royal Enfield</h2>
+    <h3 class="orbitron fade-in">Classic Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="bullet-350">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(1).jpeg" alt="Royal Enfield Bullet 350">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="bullet-350">Details</button>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in" data-model="classic-350">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(2).jpeg" alt="Royal Enfield Classic 350">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="classic-350">Details</button>
+        </div>
+      </article>
+    </div>
+    <h3 class="orbitron fade-in">Modern Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="himalayan">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(3).jpeg" alt="Royal Enfield Himalayan">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="himalayan">Details</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="bajaj-auto" class="page">
+    <h2 class="section-title orbitron fade-in">Bajaj Auto</h2>
+    <h3 class="orbitron fade-in">Performance Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="pulsar-200ns">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(4).jpeg" alt="Bajaj Pulsar 200NS">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="pulsar-200ns">Details</button>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in" data-model="pulsar-rs200">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(5).jpeg" alt="Bajaj Pulsar RS200">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="pulsar-rs200">Details</button>
+        </div>
+      </article>
+    </div>
+    <h3 class="orbitron fade-in">Commuter Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="platinum-110">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(6).jpeg" alt="Bajaj Platinum 110">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="platinum-110">Details</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="hero-motocorp" class="page">
+    <h2 class="section-title orbitron fade-in">Hero MotoCorp</h2>
+    <h3 class="orbitron fade-in">Commuter Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="splendor">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(7).jpeg" alt="Hero Splendor">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="splendor">Details</button>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in" data-model="passion-pro">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(8).jpeg" alt="Hero Passion Pro">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="passion-pro">Details</button>
+        </div>
+      </article>
+    </div>
+    <h3 class="orbitron fade-in">Electric Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="vida-v1">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(9).jpeg" alt="Hero Vida V1">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="vida-v1">Details</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="tvs-motor" class="page">
+    <h2 class="section-title orbitron fade-in">TVS Motor</h2>
+    <h3 class="orbitron fade-in">Performance Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="apache-rtr-160">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(10).jpeg" alt="TVS Apache RTR 160">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="apache-rtr-160">Details</button>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in" data-model="apache-rr-310">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(11).jpeg" alt="TVS Apache RR 310">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="apache-rr-310">Details</button>
+        </div>
+      </article>
+    </div>
+    <h3 class="orbitron fade-in">Scooter Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="ntorq-125">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(12).jpeg" alt="TVS Ntorq 125">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="ntorq-125">Details</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="mahindra" class="page">
+    <h2 class="section-title orbitron fade-in">Mahindra</h2>
+    <h3 class="orbitron fade-in">Touring Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="mojo-300">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(13).jpeg" alt="Mahindra Mojo 300">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="mojo-300">Details</button>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in" data-model="rooster-250">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(14).jpeg" alt="Mahindra Rooster 250">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="rooster-250">Details</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="bmw-motorrad" class="page">
+    <h2 class="section-title orbitron fade-in">BMW Motorrad</h2>
+    <h3 class="orbitron fade-in">Adventure Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="r-1250-gs">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(15).jpeg" alt="BMW R 1250 GS">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="r-1250-gs">Details</button>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in" data-model="f-900-gs">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(16).jpeg" alt="BMW F 900 GS">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="f-900-gs">Details</button>
+        </div>
+      </article>
+    </div>
+    <h3 class="orbitron fade-in">Sport Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="s-1000-rr">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(17).jpeg" alt="BMW S 1000 RR">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="s-1000-rr">Details</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="ktm" class="page">
+    <h2 class="section-title orbitron fade-in">KTM</h2>
+    <h3 class="orbitron fade-in">Naked Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="duke-390">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(18).jpeg" alt="KTM Duke 390">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="duke-390">Details</button>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in" data-model="duke-200">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(19).jpeg" alt="KTM Duke 200">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="duke-200">Details</button>
+        </div>
+      </article>
+    </div>
+    <h3 class="orbitron fade-in">Adventure Series</h3>
+    <div class="grid">
+      <article class="card hover-lift fade-in" data-model="adventure-390">
+        <img loading="lazy" src="https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(19).jpeg" alt="KTM Adventure 390">
+        <div class="card-content">
+          <button class="btn btn-primary" data-model="adventure-390">Details</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="reviews" class="page">
+    <h2 class="section-title orbitron fade-in">Customer Reviews</h2>
+    <div class="grid" id="review-list"></div>
+    <div class="form-group fade-in">
+      <h3 class="orbitron">Add a Review</h3>
+      <label for="review-bike">Bike:</label>
+      <select id="review-bike">
+        <option value="bullet-350">Royal Enfield Bullet 350</option>
+        <option value="classic-350">Royal Enfield Classic 350</option>
+        <option value="himalayan">Royal Enfield Himalayan</option>
+        <option value="pulsar-200ns">Bajaj Pulsar 200NS</option>
+        <option value="pulsar-rs200">Bajaj Pulsar RS200</option>
+        <option value="platinum-110">Bajaj Platinum 110</option>
+        <option value="splendor">Hero Splendor</option>
+        <option value="passion-pro">Hero Passion Pro</option>
+        <option value="vida-v1">Hero Vida V1</option>
+        <option value="apache-rtr-160">TVS Apache RTR 160</option>
+        <option value="apache-rr-310">TVS Apache RR 310</option>
+        <option value="ntorq-125">TVS Ntorq 125</option>
+        <option value="mojo-300">Mahindra Mojo 300</option>
+        <option value="rooster-250">Mahindra Rooster 250</option>
+        <option value="r-1250-gs">BMW R 1250 GS</option>
+        <option value="f-900-gs">BMW F 900 GS</option>
+        <option value="s-1000-rr">BMW S 1000 RR</option>
+        <option value="duke-390">KTM Duke 390</option>
+        <option value="duke-200">KTM Duke 200</option>
+        <option value="adventure-390">KTM Adventure 390</option>
+      </select>
+      <label for="review-text">Review:</label>
+      <textarea id="review-text" rows="4" placeholder="Write your review..."></textarea>
+      <label for="review-name">Name:</label>
+      <input type="text" id="review-name" placeholder="Your name...">
+      <button onclick="addReview()">Submit Review</button>
+    </div>
+  </div>
+
+  <div id="ratings" class="page">
+    <h2 class="section-title orbitron fade-in">Customer Ratings</h2>
+    <div class="grid" id="rating-list"></div>
+    <div class="form-group fade-in">
+      <h3 class="orbitron">Add a Rating</h3>
+      <label for="rating-bike">Bike:</label>
+      <select id="rating-bike">
+        <option value="bullet-350">Royal Enfield Bullet 350</option>
+        <option value="classic-350">Royal Enfield Classic 350</option>
+        <option value="himalayan">Royal Enfield Himalayan</option>
+        <option value="pulsar-200ns">Bajaj Pulsar 200NS</option>
+        <option value="pulsar-rs200">Bajaj Pulsar RS200</option>
+        <option value="platinum-110">Bajaj Platinum 110</option>
+        <option value="splendor">Hero Splendor</option>
+        <option value="passion-pro">Hero Passion Pro</option>
+        <option value="vida-v1">Hero Vida V1</option>
+        <option value="apache-rtr-160">TVS Apache RTR 160</option>
+        <option value="apache-rr-310">TVS Apache RR 310</option>
+        <option value="ntorq-125">TVS Ntorq 125</option>
+        <option value="mojo-300">Mahindra Mojo 300</option>
+        <option value="rooster-250">Mahindra Rooster 250</option>
+        <option value="r-1250-gs">BMW R 1250 GS</option>
+        <option value="f-900-gs">BMW F 900 GS</option>
+        <option value="s-1000-rr">BMW S 1000 RR</option>
+        <option value="duke-390">KTM Duke 390</option>
+        <option value="duke-200">KTM Duke 200</option>
+        <option value="adventure-390">KTM Adventure 390</option>
+      </select>
+      <label for="rating-score">Rating (1-5):</label>
+      <input type="number" id="rating-score" min="1" max="5" placeholder="1-5">
+      <label for="rating-name">Name:</label>
+      <input type="text" id="rating-name" placeholder="Your name...">
+      <button onclick="addRating()">Submit Rating</button>
+    </div>
+  </div>
+
+  <div id="pricing" class="page">
+    <h2 class="section-title orbitron fade-in">Pricing</h2>
+    <div class="grid">
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Royal Enfield Bullet 350</h3>
+          <p class="card-desc">$2,200</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Royal Enfield Classic 350</h3>
+          <p class="card-desc">$2,300</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Royal Enfield Himalayan</h3>
+          <p class="card-desc">$4,000</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Bajaj Pulsar 200NS</h3>
+          <p class="card-desc">$1,800</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Bajaj Pulsar RS200</h3>
+          <p class="card-desc">$2,000</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Bajaj Platinum 110</h3>
+          <p class="card-desc">$1,000</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Hero Splendor</h3>
+          <p class="card-desc">$1,000</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Hero Passion Pro</h3>
+          <p class="card-desc">$1,200</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Hero Vida V1</h3>
+          <p class="card-desc">$1,800</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">TVS Apache RTR 160</h3>
+          <p class="card-desc">$1,500</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">TVS Apache RR 310</h3>
+          <p class="card-desc">$3,500</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">TVS Ntorq 125</h3>
+          <p class="card-desc">$1,200</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Mahindra Mojo 300</h3>
+          <p class="card-desc">$2,000</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">Mahindra Rooster 250</h3>
+          <p class="card-desc">$2,500</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">BMW R 1250 GS</h3>
+          <p class="card-desc">$18,500</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">BMW F 900 GS</h3>
+          <p class="card-desc">$12,000</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">BMW S 1000 RR</h3>
+          <p class="card-desc">$20,000</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">KTM Duke 390</h3>
+          <p class="card-desc">$5,500</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">KTM Duke 200</h3>
+          <p class="card-desc">$3,000</p>
+        </div>
+      </article>
+      <article class="card hover-lift fade-in">
+        <div class="card-content">
+          <h3 class="card-title">KTM Adventure 390</h3>
+          <p class="card-desc">$6,500</p>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="comments" class="page">
+    <h2 class="section-title orbitron fade-in">Customer Comments</h2>
+    <div class="grid" id="comment-list"></div>
+    <div class="form-group fade-in">
+      <h3 class="orbitron">Add a Comment</h3>
+      <label for="comment-text">Comment:</label>
+      <textarea id="comment-text" rows="4" placeholder="Write your comment..."></textarea>
+      <label for="comment-name">Name:</label>
+      <input type="text" id="comment-name" placeholder="Your name...">
+      <button onclick="addComment()">Submit Comment</button>
+    </div>
+  </div>
+
+  <div id="contact" class="page">
+    <h2 class="section-title orbitron fade-in">Contact Us</h2>
+    <div class="card hover-lift fade-in">
+      <div class="card-content">
+        <p>Email: support@motoverse.com</p>
+        <p>Phone: +1-800-MOTO123</p>
+        <p>Address: 123 Bike Lane, Moto City</p>
       </div>
     </div>
-  </section>
+  </div>
 
-  <section id="bikes" class="section">
-    <h2 class="section-title orbitron fade-in"><span class="gradient-text">BIKES</span></h2>
-    <p class="section-subtitle fade-in">Find your ride</p>
-    <div class="grid">
-      <article class="card glass hover-lift fade-in" data-category="hypersport">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=600&q=80" alt="Hypersport motorcycle">
-        <div class="card-content">
-          <h3 class="card-title orbitron">Hypersport</h3>
-          <p class="card-desc">Ultimate speed machines</p>
-          <div class="card-specs">300+ HP | 200+ MPH</div>
-          <button class="btn btn-primary" aria-label="Explore Hypersport Models">Explore</button>
-        </div>
-      </article>
-      <article class="card glass hover-lift fade-in" data-category="supernaked">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80" alt="Supernaked motorcycle">
-        <div class="card-content">
-          <h3 class="card-title orbitron">Supernaked</h3>
-          <p class="card-desc">Raw power streetfighters</p>
-          <div class="card-specs">180+ HP</div>
-          <button class="btn btn-primary" aria-label="Explore Supernaked Models">Explore</button>
-        </div>
-      </article>
-      <article class="card glass hover-lift fade-in" data-category="adventure">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80" alt="Adventure motorcycle">
-        <div class="card-content">
-          <h3 class="card-title orbitron">Adventure</h3>
-          <p class="card-desc">Conquer any terrain</p>
-          <div class="card-specs">120+ HP | 600+ Miles</div>
-          <button class="btn btn-primary" aria-label="Explore Adventure Models">Explore</button>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section id="tech" class="section" style="background: rgba(0, 0, 0, 0.3);">
-    <h2 class="section-title orbitron fade-in"><span class="gradient-text">TECH</span></h2>
-    <p class="section-subtitle fade-in">Advanced systems</p>
-    <div class="grid">
-      <article class="card glass hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title orbitron">Cornering ABS</h3>
-          <p class="card-desc">Lean-sensitive braking</p>
-        </div>
-      </article>
-      <article class="card glass hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title orbitron">Traction Control</h3>
-          <p class="card-desc">AI-powered power</p>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section id="brands" class="section">
-    <h2 class="section-title orbitron fade-in"><span class="gradient-text">BRANDS</span></h2>
-    <p class="section-subtitle fade-in">Top manufacturers</p>
-    <div class="grid">
-      <article class="card glass hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title orbitron">KTM</h3>
-          <p class="card-desc">🇦🇹 Adventure & Racing</p>
-        </div>
-      </article>
-      <article class="card glass hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title orbitron">Ducati</h3>
-          <p class="card-desc">🇮🇹 Superbike Excellence</p>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <footer role="contentinfo">
-    <h3 class="footer-title orbitron fade-in"><span class="gradient-text">MOTO</span>VERSE</h3>
-    <p class="footer-desc fade-in">Motorcycle excellence</p>
-    <nav class="footer-links fade-in">
-      <a href="#reviews" aria-label="Reviews">Reviews</a>
-      <a href="#news" aria-label="News">News</a>
-    </nav>
-    <div class="footer-bottom">© 2025 MotoVerse</div>
+  <footer>
+    <h3 class="footer-title orbitron"><span class="gradient-text">MOTO</span>VERSE</h3>
+    <p class="footer-desc">Your motorcycle destination</p>
   </footer>
 
   <div id="modal" class="modal" role="dialog" aria-modal="true">
@@ -390,44 +640,63 @@
 
   <script>
     const models = {
-      hypersport: {
-        title: "Hypersport",
-        items: [
-          { name: "KTM RC 390", price: "$5,500", image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=600&q=80", specs: { Engine: "373cc Single", Power: "43 HP" }, description: "Agile track bike" },
-          { name: "Ducati Panigale", price: "$40,000", image: "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?auto=format&fit=crop&w=600&q=80", specs: { Engine: "998cc V4", Power: "221 HP" }, description: "Ultimate track weapon" }
-        ]
-      },
-      supernaked: {
-        title: "Supernaked",
-        items: [
-          { name: "Ducati Streetfighter", price: "$28,000", image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80", specs: { Engine: "1103cc V4", Power: "208 HP" }, description: "Naked power" }
-        ]
-      },
-      adventure: {
-        title: "Adventure",
-        items: [
-          { name: "KTM 1290 Super Adventure", price: "$18,500", image: "https://images.unsplash.com/photo-1591202169949-296eaa48a5b7?auto=format&fit=crop&w=600&q=80", specs: { Engine: "1301cc V-Twin", Power: "160 HP" }, description: "Global explorer" }
-        ]
-      }
+      'bullet-350': { name: 'Royal Enfield Bullet 350', price: '$2,200', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(1).jpeg', specs: { Engine: '349cc Single', Power: '20 HP' } },
+      'classic-350': { name: 'Royal Enfield Classic 350', price: '$2,300', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(2).jpeg', specs: { Engine: '349cc Single', Power: '20 HP' } },
+      'himalayan': { name: 'Royal Enfield Himalayan', price: '$4,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(3).jpeg', specs: { Engine: '411cc Single', Power: '24 HP' } },
+      'pulsar-200ns': { name: 'Bajaj Pulsar 200NS', price: '$1,800', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(4).jpeg', specs: { Engine: '199cc Single', Power: '24 HP' } },
+      'pulsar-rs200': { name: 'Bajaj Pulsar RS200', price: '$2,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(5).jpeg', specs: { Engine: '199cc Single', Power: '24 HP' } },
+      'platinum-110': { name: 'Bajaj Platinum 110', price: '$1,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(6).jpeg', specs: { Engine: '115cc Single', Power: '8 HP' } },
+      'splendor': { name: 'Hero Splendor', price: '$1,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(7).jpeg', specs: { Engine: '97cc Single', Power: '8 HP' } },
+      'passion-pro': { name: 'Hero Passion Pro', price: '$1,200', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(8).jpeg', specs: { Engine: '113cc Single', Power: '9 HP' } },
+      'vida-v1': { name: 'Hero Vida V1', price: '$1,800', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(9).jpeg', specs: { Motor: 'Electric', Power: '6 kW' } },
+      'apache-rtr-160': { name: 'TVS Apache RTR 160', price: '$1,500', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(10).jpeg', specs: { Engine: '159cc Single', Power: '17 HP' } },
+      'apache-rr-310': { name: 'TVS Apache RR 310', price: '$3,500', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(11).jpeg', specs: { Engine: '312cc Single', Power: '34 HP' } },
+      'ntorq-125': { name: 'TVS Ntorq 125', price: '$1,200', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(12).jpeg', specs: { Engine: '124cc Single', Power: '9 HP' } },
+      'mojo-300': { name: 'Mahindra Mojo 300', price: '$2,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(13).jpeg', specs: { Engine: '294cc Single', Power: '26 HP' } },
+      'rooster-250': { name: 'Mahindra Rooster 250', price: '$2,500', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(14).jpeg', specs: { Engine: '249cc Single', Power: '23 HP' } },
+      'r-1250-gs': { name: 'BMW R 1250 GS', price: '$18,500', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(15).jpeg', specs: { Engine: '1254cc Boxer Twin', Power: '136 HP' } },
+      'f-900-gs': { name: 'BMW F 900 GS', price: '$12,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(16).jpeg', specs: { Engine: '895cc Twin', Power: '105 HP' } },
+      's-1000-rr': { name: 'BMW S 1000 RR', price: '$20,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(17).jpeg', specs: { Engine: '999cc Inline-4', Power: '207 HP' } },
+      'duke-390': { name: 'KTM Duke 390', price: '$5,500', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(18).jpeg', specs: { Engine: '373cc Single', Power: '43 HP' } },
+      'duke-200': { name: 'KTM Duke 200', price: '$3,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(19).jpeg', specs: { Engine: '199cc Single', Power: '25 HP' } },
+      'adventure-390': { name: 'KTM Adventure 390', price: '$6,500', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/Images/download%20(19).jpeg', specs: { Engine: '373cc Single', Power: '43 HP' } }
     };
+
+    let reviews = JSON.parse(localStorage.getItem('reviews')) || [
+      { bike: 'bullet-350', text: 'Classic ride with great vibes.', name: 'Ravi K.', timestamp: '09:43 PM, 26 Jul 2025' },
+      { bike: 'r-1250-gs', text: 'Perfect for long tours!', name: 'Hans M.', timestamp: '09:43 PM, 26 Jul 2025' }
+    ];
+    let ratings = JSON.parse(localStorage.getItem('ratings')) || [
+      { bike: 'bullet-350', score: 4.3, count: 100, name: 'Avg User' },
+      { bike: 'r-1250-gs', score: 4.7, count: 120, name: 'Avg User' }
+    ];
+    let comments = JSON.parse(localStorage.getItem('comments')) || [
+      { text: 'Amazing build quality!', name: 'Priya S.', timestamp: '09:43 PM, 26 Jul 2025' },
+      { text: 'Great service from the team.', name: 'Klaus W.', timestamp: '09:43 PM, 26 Jul 2025' }
+    ];
 
     const $ = (sel, base = document) => base.querySelector(sel);
     const $$ = (sel, base = document) => base.querySelectorAll(sel);
 
-    function openModal(category) {
+    function showPage(pageId) {
+      $$('.page').forEach(page => page.classList.remove('active'));
+      $(`#${pageId}`).classList.add('active');
+    }
+
+    function openModal(modelId) {
       const modal = $('#modal');
-      $('#modal-title').textContent = models[category].title;
-      $('#modal-models').innerHTML = models[category].items.map(item => `
-        <article class="model-card glass hover-lift">
-          <img loading="lazy" src="${item.image}" alt="${item.name}" style="width: 100%; height: 120px; object-fit: cover;">
+      const model = models[modelId];
+      $('#modal-title').textContent = model.name;
+      $('#modal-models').innerHTML = `
+        <article class="model-card">
+          <img loading="lazy" src="${model.image}" alt="${model.name}" style="width: 100%; height: 120px; object-fit: cover;">
           <div class="model-info">
-            <h3 class="model-name orbitron">${item.name}</h3>
-            <div class="model-price">${item.price}</div>
-            <div class="model-specs">${Object.entries(item.specs).map(([k, v]) => `<div class="spec-item"><span>${k}:</span><span class="spec-value">${v}</span></div>`).join('')}</div>
-            <p class="model-description">${item.description}</p>
+            <h3 class="model-name orbitron">${model.name}</h3>
+            <div class="model-price">${model.price}</div>
+            <div class="model-specs">${Object.entries(model.specs).map(([k, v]) => `<div class="spec-item"><span>${k}:</span><span class="spec-value">${v}</span></div>`).join('')}</div>
           </div>
         </article>
-      `).join('');
+      `;
       modal.classList.add('active');
       modal.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
@@ -440,52 +709,126 @@
       document.body.style.overflow = '';
     }
 
+    function addReview() {
+      const bike = $('#review-bike').value;
+      const text = $('#review-text').value;
+      const name = $('#review-name').value;
+      if (text && name) {
+        const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
+        reviews.push({ bike, text, name, timestamp });
+        localStorage.setItem('reviews', JSON.stringify(reviews));
+        $('#review-text').value = '';
+        $('#review-name').value = '';
+        updateReviews();
+      }
+    }
+
+    function addRating() {
+      const bike = $('#rating-bike').value;
+      const score = parseFloat($('#rating-score').value);
+      const name = $('#rating-name').value;
+      if (score >= 1 && score <= 5 && name) {
+        const rating = ratings.find(r => r.bike === bike);
+        if (rating) {
+          rating.score = ((rating.score * rating.count) + score) / (rating.count + 1);
+          rating.count++;
+        } else {
+          ratings.push({ bike, score, count: 1, name });
+        }
+        localStorage.setItem('ratings', JSON.stringify(ratings));
+        $('#rating-score').value = '';
+        $('#rating-name').value = '';
+        updateRatings();
+      }
+    }
+
+    function addComment() {
+      const text = $('#comment-text').value;
+      const name = $('#comment-name').value;
+      if (text && name) {
+        const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
+        comments.push({ text, name, timestamp });
+        localStorage.setItem('comments', JSON.stringify(comments));
+        $('#comment-text').value = '';
+        $('#comment-name').value = '';
+        updateComments();
+      }
+    }
+
+    function updateReviews() {
+      const reviewList = $('#review-list');
+      reviewList.innerHTML = reviews.map(r => `
+        <article class="card hover-lift fade-in">
+          <div class="card-content">
+            <h3 class="card-title">${models[r.bike].name}</h3>
+            <p class="card-desc">${r.text} - ${r.name} (${r.timestamp})</p>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function updateRatings() {
+      const ratingList = $('#rating-list');
+      ratingList.innerHTML = ratings.map(r => `
+        <article class="card hover-lift fade-in">
+          <div class="card-content">
+            <h3 class="card-title">${models[r.bike].name}</h3>
+            <p class="card-desc">${r.score.toFixed(1)}/5 (${r.count} reviews)</p>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function updateComments() {
+      const commentList = $('#comment-list');
+      commentList.innerHTML = comments.map(c => `
+        <article class="card hover-lift fade-in">
+          <div class="card-content">
+            <p class="card-desc">${c.text} - ${c.name} (${c.timestamp})</p>
+          </div>
+        </article>
+      `).join('');
+    }
+
     window.addEventListener('load', () => {
       setTimeout(() => $('#loadingScreen').classList.add('hidden'), 1000);
 
-      // Event delegation
-      document.addEventListener('click', e => {
-        const cardBtn = e.target.closest('.card button');
-        if (cardBtn) openModal(cardBtn.closest('.card').dataset.category);
-        else if (e.target.closest('.modal-close') || e.target === $('#modal')) closeModal();
+      $$('nav a').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const pageId = link.getAttribute('data-page');
+          showPage(pageId);
+        });
       });
 
-      document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+      $$('.btn[data-page]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          showPage('brands'); // Redirect to brands overview
+        });
+      });
 
-      // Intersection Observer for fade-in
+      $$('.card button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openModal(btn.getAttribute('data-model'));
+        });
+      });
+
+      $('.modal-close').addEventListener('click', closeModal);
+      $('#modal').addEventListener('click', (e) => e.target === $('#modal') && closeModal());
+      document.addEventListener('keydown', (e) => e.key === 'Escape' && closeModal());
+
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) entry.target.classList.add('visible');
-          else entry.target.classList.remove('visible'); // Ensure fade out when out of view
+          else entry.target.classList.remove('visible');
         });
       }, { threshold: 0.3 });
       $$('.fade-in').forEach(el => observer.observe(el));
 
-      // Enhanced parallax and navigation highlight
-      let ticking = false;
-      window.addEventListener('scroll', () => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            const scrollY = window.scrollY;
-            const parallax = Math.min(scrollY * 0.5, 200); // Limit parallax movement
-            $('img').style.setProperty('--parallax', `${parallax}px`);
-            $$('nav a').forEach(link => {
-              const section = $(link.getAttribute('href'));
-              const rect = section.getBoundingClientRect();
-              link.classList.toggle('active', rect.top <= 50 && rect.bottom > 50);
-            });
-            ticking = false;
-          });
-          ticking = true;
-        }
-      });
-
-      // Ensure buttons are clickable
-      $$('.btn').forEach(btn => {
-        btn.style.pointerEvents = 'auto';
-        btn.addEventListener('focus', () => btn.classList.add('hover-lift'));
-        btn.addEventListener('blur', () => btn.classList.remove('hover-lift'));
-      });
+      updateReviews();
+      updateRatings();
+      updateComments();
     });
   </script>
 </body>
