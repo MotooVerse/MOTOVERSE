@@ -4,18 +4,15 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection (replace with your MongoDB Atlas connection string or local MongoDB URI)
 mongoose.connect('mongodb+srv://<username>:<password>@cluster0.mongodb.net/motoverse?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Schemas
 const reviewSchema = new mongoose.Schema({
   bike: String,
   text: String,
@@ -27,6 +24,7 @@ const ratingSchema = new mongoose.Schema({
   score: Number,
   count: Number,
   name: String,
+  timestamp: String,
 });
 const commentSchema = new mongoose.Schema({
   text: String,
@@ -44,8 +42,6 @@ const Rating = mongoose.model('Rating', ratingSchema);
 const Comment = mongoose.model('Comment', commentSchema);
 const Note = mongoose.model('Note', noteSchema);
 
-// API Endpoints
-// Reviews
 app.get('/api/reviews', async (req, res) => {
   const reviews = await Review.find();
   res.json(reviews);
@@ -56,7 +52,6 @@ app.post('/api/reviews', async (req, res) => {
   res.status(201).json(review);
 });
 
-// Ratings
 app.get('/api/ratings', async (req, res) => {
   const ratings = await Rating.find();
   res.json(ratings);
@@ -69,6 +64,7 @@ app.post('/api/ratings', async (req, res) => {
     rating.score = ((rating.score * rating.count) + score) / (rating.count + 1);
     rating.count += 1;
     rating.name = name;
+    rating.timestamp = timestamp;
     await rating.save();
   } else {
     rating = new Rating({ bike, score, count: 1, name, timestamp });
@@ -77,7 +73,6 @@ app.post('/api/ratings', async (req, res) => {
   res.status(201).json(rating);
 });
 
-// Comments
 app.get('/api/comments', async (req, res) => {
   const comments = await Comment.find();
   res.json(comments);
@@ -88,7 +83,6 @@ app.post('/api/comments', async (req, res) => {
   res.status(201).json(comment);
 });
 
-// Notes
 app.get('/api/notes', async (req, res) => {
   const notes = await Note.find();
   res.json(notes);
@@ -99,17 +93,18 @@ app.post('/api/notes', async (req, res) => {
   res.status(201).json(note);
 });
 
-// Serve HTML
 app.get('/', (req, res) => {
   res.send(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=1200">
   <title>MotoVerse - Motorcycle Universe</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.comទ
+
+System: .googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap');
 
     :root {
       --primary: #ff6b35;
@@ -133,9 +128,8 @@ app.get('/', (req, res) => {
       background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
       color: white;
       line-height: 1.6;
-      overflow-x: hidden;
-      position: relative;
-      max-width: 1200px;
+      overflow-x: auto;
+      min-width: 1200px;
       margin: 0 auto;
     }
 
@@ -147,17 +141,30 @@ app.get('/', (req, res) => {
       color: transparent;
     }
 
-    .glass { background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(8px); }
-    .neon { text-shadow: 0 0 6px var(--primary); }
-    .hover-lift { transition: transform 0.2s ease; }
-    .hover-lift:hover { transform: translateY(-6px); }
+    .glass { 
+      background: var(--glass); 
+      border: 1px solid var(--border); 
+      backdrop-filter: blur(8px); 
+    }
+    .neon { 
+      text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary); 
+    }
+    .hover-lift { 
+      transition: transform 0.3s ease; 
+    }
+    .hover-lift:hover { 
+      transform: translateY(-8px); 
+    }
 
     .fade-in {
       opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
     }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .fade-in.visible { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
 
     .loading-screen {
       position: fixed;
@@ -166,18 +173,23 @@ app.get('/', (req, res) => {
       display: grid;
       place-content: center;
       z-index: 1000;
-      transition: opacity 0.4s ease-out;
+      transition: opacity 0.5s ease-out;
     }
-    .loading-screen.hidden { opacity: 0; pointer-events: none; }
+    .loading-screen.hidden { 
+      opacity: 0; 
+      pointer-events: none; 
+    }
     .loader {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--primary);
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--primary);
       border-bottom-color: transparent;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 1s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin { 
+      to { transform: rotate(360deg); } 
+    }
 
     nav {
       position: sticky;
@@ -185,32 +197,37 @@ app.get('/', (req, res) => {
       margin: 0 auto;
       width: fit-content;
       z-index: 100;
-      padding: 8px 15px;
-      border-radius: 25px;
+      padding: 10px 20px;
+      border-radius: 30px;
     }
     nav ul {
       display: flex;
-      gap: 12px;
+      gap: 15px;
       list-style: none;
     }
     nav a {
       color: white;
       text-decoration: none;
       font-weight: 700;
-      transition: color 0.2s ease;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
     }
-    nav a:hover { color: var(--primary); }
+    nav a:hover { 
+      color: var(--primary); 
+    }
 
     .page {
       display: none;
-      padding: 60px 15px;
-      max-width: 1200px;
+      padding: 80px 20px;
+      min-width: 1200px;
       margin: 0 auto;
     }
-    .page.active { display: block; }
+    .page.active { 
+      display: block; 
+    }
 
     .hero {
-      min-height: 80vh;
+      min-height: 90vh;
       text-align: center;
       position: relative;
       background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
@@ -222,14 +239,15 @@ app.get('/', (req, res) => {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.7;
-      z-index: -1;
+      opacity: 0.6;
+      z-index: -2;
     }
     .hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      opacity: 0.3;
       z-index: -1;
     }
     .particles {
@@ -240,79 +258,86 @@ app.get('/', (req, res) => {
     .particle {
       position: absolute;
       background: var(--primary);
-      opacity: 0.5;
+      opacity: 0.6;
       border-radius: 50%;
-      animation: float 10s infinite linear;
+      animation: float 8s infinite linear;
     }
     @keyframes float {
-      0% { transform: translateY(0); opacity: 0.5; }
-      50% { opacity: 0.8; }
-      100% { transform: translateY(-100vh); opacity: 0.2; }
+      0% { transform: translateY(0); opacity: 0.6; }
+      50% { opacity: 0.9; }
+      100% { transform: translateY(-120vh); opacity: 0.3; }
     }
     .hero-content {
       position: relative;
       z-index: 1;
-      padding: 40px 20px;
+      padding: 50px 20px;
     }
     .hero h1 {
-      font-size: clamp(3rem, 6vw, 5rem);
-      margin-bottom: 20px;
+      font-size: clamp(4rem, 8vw, 6rem);
+      margin-bottom: 25px;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
     }
     .hero p {
-      max-width: 600px;
-      margin: 0 auto 30px;
-      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      font-size: 1.4rem;
       color: var(--text-light);
+      animation: taglineFade 1s ease-in-out;
+    }
+    @keyframes taglineFade {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
     .btn-pulse {
-      animation: pulse 2s infinite ease-in-out;
+      animation: pulse 1.5s infinite ease-in-out;
     }
     @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 10px var(--primary); }
-      50% { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
-      100% { transform: scale(1); box-shadow: 0 0 10px var(--primary); }
+      0% { transform: scale(1); box-shadow: 0 0 15px var(--primary); }
+      50% { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); }
+      100% { transform: scale(1); box-shadow: 0 0 15px var(--primary); }
     }
 
     .btn {
-      padding: 12px 24px;
-      border-radius: 25px;
+      padding: 15px 30px;
+      border-radius: 30px;
       text-decoration: none;
       font-weight: 700;
-      transition: transform 0.2s ease;
+      font-size: 1.2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .btn-primary {
       background: var(--primary);
       color: white;
     }
     .btn:hover {
-      transform: translateY(-2px);
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px var(--primary);
     }
 
     .grid {
       display: grid;
-      gap: 15px;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
     .card {
-      border-radius: 10px;
+      border-radius: 15px;
       overflow: hidden;
       background: var(--glass);
     }
     .card img {
       width: 100%;
-      height: 150px;
+      height: 160px;
       object-fit: cover;
     }
     .card-content {
-      padding: 15px;
+      padding: 20px;
     }
 
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.8);
       display: none;
       place-content: center;
       z-index: 200;
@@ -323,126 +348,112 @@ app.get('/', (req, res) => {
     .modal-content {
       background: var(--bg-dark);
       border-radius: 15px;
-      max-width: 95vw;
-      max-height: 95vh;
+      max-width: 90vw;
+      max-height: 90vh;
       overflow-y: auto;
-      padding: 15px;
+      padding: 20px;
     }
     .modal-header {
-      padding: 10px;
+      padding: 15px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
     }
     .modal-title {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       color: var(--primary);
     }
     .modal-close {
       background: none;
       border: none;
       color: var(--primary);
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       cursor: pointer;
     }
     .modal-body {
-      padding: 10px 0;
+      padding: 15px 0;
     }
     .model-card {
       border-radius: 10px;
       overflow: hidden;
     }
     .model-info {
-      padding: 10px;
+      padding: 15px;
     }
     .model-name {
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       color: var(--primary);
     }
     .model-price {
-      font-size: 0.9rem;
-      margin: 5px 0;
+      font-size: 1rem;
+      margin: 8px 0;
     }
     .model-specs {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
     .spec-item {
       display: flex;
       justify-content: space-between;
-      margin: 3px 0;
+      margin: 5px 0;
     }
     .spec-value {
       color: var(--primary);
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     .form-group label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
     }
     .form-group input,
     .form-group textarea,
     .form-group select {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--glass);
       color: white;
+      font-size: 1rem;
     }
     .form-group textarea {
       font-family: 'Courier New', Courier, monospace;
+      resize: vertical;
     }
     .form-group button {
-      padding: 10px 20px;
+      padding: 12px 25px;
       border-radius: 20px;
       background: var(--primary);
       border: none;
       color: white;
       cursor: pointer;
+      font-size: 1.1rem;
     }
 
     footer {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 30px 15px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 40px 20px;
       text-align: center;
-      max-width: 1200px;
+      min-width: 1200px;
       margin: 0 auto;
     }
     .footer-title {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
     }
     .footer-desc {
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: var(--text-light);
-      max-width: 400px;
-      margin: 10px auto;
-    }
-
-    @media (max-width: 768px) {
-      nav ul {
-        gap: 8px;
-      }
-      .hero h1 {
-        font-size: 2.5rem;
-      }
-      .hero p {
-        font-size: 1rem;
-      }
-      .section-title {
-        font-size: 1.8rem;
-      }
-      body {
-        max-width: 100%;
-      }
+      max-width: 500px;
+      margin: 15px auto;
     }
   </style>
 </head>
 <body>
   <div class="loading-screen" id="loadingScreen">
-    <div style="display: flex; gap: 10px; align-items: center;">
+    <div style="display: flex; gap: 15px; align-items: center;">
       <div class="loader"></div>
       <h1 class="orbitron">MotoVerse</h1>
     </div>
@@ -473,7 +484,7 @@ app.get('/', (req, res) => {
       <div class="particles" id="particles"></div>
       <div class="hero-content fade-in">
         <h1 class="orbitron neon">MOTO<span class="gradient-text">VERSE</span></h1>
-        <p>Ride into the Ultimate Motorcycle Universe!</p>
+        <p>Ride the Future, Embrace the Journey!</p>
         <a href="#" class="btn btn-primary btn-pulse" data-page="royal-enfield">Explore Now</a>
       </div>
     </section>
@@ -978,132 +989,152 @@ app.get('/', (req, res) => {
 
     async function addReview() {
       const bike = $('#review-bike').value;
-      const text = $('#review-text').value;
-      const name = $('#review-name').value;
-      if (text && name) {
-        const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-        try {
-          const response = await fetch('/api/reviews', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ bike, text, name, timestamp })
-          });
-          if (response.ok) {
-            $('#review-text').value = '';
-            $('#review-name').value = '';
-            await updateReviews();
-          }
-        } catch (error) {
-          console.error('Error adding review:', error);
+      const text = $('#review-text').value.trim();
+      const name = $('#review-name').value.trim();
+      if (!text || !name) {
+        alert('Please fill in both review and name fields.');
+        return;
+      }
+      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
+      try {
+        const response = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bike, text, name, timestamp })
+        });
+        if (response.ok) {
+          $('#review-text').value = '';
+          $('#review-name').value = '';
+          await updateReviews();
+        } else {
+          alert('Failed to submit review. Please try again.');
         }
+      } catch (error) {
+        alert('Error submitting review: ' + error.message);
       }
     }
 
     async function addRating() {
       const bike = $('#rating-bike').value;
-      const score = parseFloat($('#rating-score').value);
-      const name = $('#rating-name').value;
-      if (score >= 1 && score <= 5 && name) {
-        try {
-          const response = await fetch('/api/ratings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ bike, score, name })
-          });
-          if (response.ok) {
-            $('#rating-score').value = '';
-            $('#rating-name').value = '';
-            await updateRatings();
-          }
-        } catch (error) {
-          console.error('Error adding rating:', error);
+      const score = parseInt($('#rating-score').value);
+      const name = $('#rating-name').value.trim();
+      if (!score || score < 1 || score > 5 || !name) {
+        alert('Please enter a valid rating (1-5) and name.');
+        return;
+      }
+      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
+      try {
+        const response = await fetch('/api/ratings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bike, score, name, timestamp })
+        });
+        if (response.ok) {
+          $('#rating-score').value = '';
+          $('#rating-name').value = '';
+          await updateRatings();
+        } else {
+          alert('Failed to submit rating. Please try again.');
         }
+      } catch (error) {
+        alert('Error submitting rating: ' + error.message);
       }
     }
 
     async function addComment() {
-      const text = $('#comment-text').value;
-      const name = $('#comment-name').value;
-      if (text && name) {
-        const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-        try {
-          const response = await fetch('/api/comments', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, name, timestamp })
-          });
-          if (response.ok) {
-            $('#comment-text').value = '';
-            $('#comment-name').value = '';
-            await updateComments();
-          }
-        } catch (error) {
-          console.error('Error adding comment:', error);
+      const text = $('#comment-text').value.trim();
+      const name = $('#comment-name').value.trim();
+      if (!text || !name) {
+        alert('Please fill in both comment and name fields.');
+        return;
+      }
+      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
+      try {
+        const response = await fetch('/api/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, name, timestamp })
+        });
+        if (response.ok) {
+          $('#comment-text').value = '';
+          $('#comment-name').value = '';
+          await updateComments();
+        } else {
+          alert('Failed to submit comment. Please try again.');
         }
+      } catch (error) {
+        alert('Error submitting comment: ' + error.message);
       }
     }
 
     async function addNote() {
-      const text = $('#note-text').value;
-      const name = $('#note-name').value;
-      if (text && name) {
-        const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-        try {
-          const response = await fetch('/api/notes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, name, timestamp })
-          });
-          if (response.ok) {
-            $('#note-text').value = '';
-            $('#note-name').value = '';
-            await updateNotes();
-          }
-        } catch (error) {
-          console.error('Error adding note:', error);
+      const text = $('#note-text').value.trim();
+      const name = $('#note-name').value.trim();
+      if (!text || !name) {
+        alert('Please fill in both note and name fields.');
+        return;
+      }
+      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
+      try {
+        const response = await fetch('/api/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, name, timestamp })
+        });
+        if (response.ok) {
+          $('#note-text').value = '';
+          $('#note-name').value = '';
+          await updateNotes();
+        } else {
+          alert('Failed to submit note. Please try again.');
         }
+      } catch (error) {
+        alert('Error submitting note: ' + error.message);
       }
     }
 
     async function updateReviews() {
       try {
         const response = await fetch('/api/reviews');
+        if (!response.ok) throw new Error('Failed to fetch reviews');
         const reviews = await response.json();
         const reviewList = $('#review-list');
         reviewList.innerHTML = reviews.map(r => `
           <article class="card hover-lift fade-in">
             <div class="card-content">
-              <h3 class="card-title">${models[r.bike].name}</h3>
+              <h3 class="card-title">${models[r.bike]?.name || r.bike}</h3>
               <p class="card-desc">${r.text} - ${r.name} (${r.timestamp})</p>
             </div>
           </article>
         `).join('');
       } catch (error) {
-        console.error('Error fetching reviews:', error);
+        alert('Error fetching reviews: ' + error.message);
       }
     }
 
     async function updateRatings() {
       try {
         const response = await fetch('/api/ratings');
+        if (!response.ok) throw new Error('Failed to fetch ratings');
         const ratings = await response.json();
         const ratingList = $('#rating-list');
         ratingList.innerHTML = ratings.map(r => `
           <article class="card hover-lift fade-in">
             <div class="card-content">
-              <h3 class="card-title">${models[r.bike].name}</h3>
-              <p class="card-desc">${r.score.toFixed(1)}/5 (${r.count} reviews)</p>
+              <h3 class="card-title">${models[r.bike]?.name || r.bike}</h3>
+              <p class="card-desc">${r.score.toFixed(1)}/5 (${r.count} reviews) - ${r.name} (${r.timestamp})</p>
             </div>
           </article>
         `).join('');
       } catch (error) {
-        console.error('Error fetching ratings:', error);
+        alert('Error fetching ratings: ' + error.message);
       }
     }
 
     async function updateComments() {
       try {
         const response = await fetch('/api/comments');
+        if (!response.ok) throw new Error('Failed to fetch comments');
         const comments = await response.json();
         const commentList = $('#comment-list');
         commentList.innerHTML = comments.map(c => `
@@ -1114,13 +1145,14 @@ app.get('/', (req, res) => {
           </article>
         `).join('');
       } catch (error) {
-        console.error('Error fetching comments:', error);
+        alert('Error fetching comments: ' + error.message);
       }
     }
 
     async function updateNotes() {
       try {
         const response = await fetch('/api/notes');
+        if (!response.ok) throw new Error('Failed to fetch notes');
         const notes = await response.json();
         const noteList = $('#note-list');
         noteList.innerHTML = notes.map(n => `
@@ -1131,22 +1163,23 @@ app.get('/', (req, res) => {
           </article>
         `).join('');
       } catch (error) {
-        console.error('Error fetching notes:', error);
+        alert('Error fetching notes: ' + error.message);
       }
     }
 
     window.addEventListener('load', () => {
       setTimeout(() => $('#loadingScreen').classList.add('hidden'), 1000);
 
-      // Generate particles for home page
       const particlesDiv = $('#particles');
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 100; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
-        particle.style.width = \`\${Math.random() * 5 + 2}px\`;
-        particle.style.height = particle.style.width;
+        const size = Math.random() * 6 + 3;
+        particle.style.width = \`\${size}px\`;
+        particle.style.height = \`\${size}px\`;
         particle.style.left = \`\${Math.random() * 100}%\`;
-        particle.style.animationDelay = \`\${Math.random() * 10}s\`;
+        particle.style.animationDuration = \`\${Math.random() * 5 + 5}s\`;
+        particle.style.animationDelay = \`\${Math.random() * 5}s\`;
         particlesDiv.appendChild(particle);
       }
 
@@ -1181,7 +1214,7 @@ app.get('/', (req, res) => {
           if (entry.isIntersecting) entry.target.classList.add('visible');
           else entry.target.classList.remove('visible');
         });
-      }, { threshold: 0.3 });
+      }, { threshold: 0.2 });
       $$('.fade-in').forEach(el => observer.observe(el));
 
       updateReviews();
