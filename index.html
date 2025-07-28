@@ -727,7 +727,7 @@
         return text ? JSON.parse(text) : [];
       } catch (error) {
         console.error(`Error fetching ${file}:`, error);
-        alert(`Failed to load ${file}. Check console for details.`);
+        alert(`Failed to load ${file}. Displaying an empty list. Check console for details.`);
         return [];
       }
     }
@@ -736,6 +736,7 @@
       const reviewList = $('#review-list');
       reviewList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>';
       const reviews = await fetchData('reviews.json');
+      console.log('Fetched reviews:', reviews); // Debug log
       reviewList.innerHTML = reviews.map(r => `
         <article class="card hover-lift fade-in">
           <div class="card-content">
