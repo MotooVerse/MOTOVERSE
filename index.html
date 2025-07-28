@@ -761,7 +761,7 @@
 
     async function updateComments() {
       const commentList = $('#comment-list');
-      commentList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>'; // Show loading
+      commentList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>';
       const comments = await fetchData('comments.json');
       commentList.innerHTML = comments.map(c => `
         <article class="card hover-lift fade-in">
@@ -770,12 +770,12 @@
           </div>
         </article>
       `).join('');
-      commentList.classList.add('visible'); // Force visibility
+      commentList.classList.add('visible');
     }
 
     async function updateReviews() {
       const reviewList = $('#review-list');
-      reviewList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>'; // Show loading
+      reviewList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>';
       const reviews = await fetchData('reviews.json');
       reviewList.innerHTML = reviews.map(r => `
         <article class="card hover-lift fade-in">
@@ -784,12 +784,12 @@
           </div>
         </article>
       `).join('');
-      reviewList.classList.add('visible'); // Force visibility
+      reviewList.classList.add('visible');
     }
 
     async function updateNotes() {
       const noteList = $('#note-list');
-      noteList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>'; // Show loading
+      noteList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>';
       const notes = await fetchData('notes.json');
       noteList.innerHTML = notes.map(n => `
         <article class="card hover-lift fade-in">
@@ -798,7 +798,7 @@
           </div>
         </article>
       `).join('');
-      noteList.classList.add('visible'); // Force visibility
+      noteList.classList.add('visible');
     }
 
     async function addComment() {
@@ -850,10 +850,16 @@
     }
 
     async function saveData(file, data) {
+      // Temporary local simulation for testing
+      console.log(`Simulating save to ${file}:`, data);
+      alert('Submit simulated locally. Check console for data. To enable real saving, follow setup instructions below.');
+      
+      // Uncomment and configure the following for real GitHub integration
+      /*
       const response = await fetch('https://api.github.com/repos/MotooVerse/MOTOVERSE/dispatches', {
         method: 'POST',
         headers: {
-          'Authorization': 'token YOUR_PAT_HERE',
+          'Authorization': 'token YOUR_PAT_HERE', // Replace with valid PAT
           'Accept': 'application/vnd.github.3+json'
         },
         body: JSON.stringify({
@@ -862,6 +868,7 @@
         })
       });
       if (!response.ok) throw new Error('Failed to trigger GitHub Action');
+      */
     }
 
     window.addEventListener('load', () => {
