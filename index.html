@@ -1,100 +1,3 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const app = express();
-const port = 3000;
-
-app.use(cors());
-app.use(express.json());
-
-mongoose.connect('mongodb+srv://<username>:<password>@cluster0.mongodb.net/motoverse?retryWrites=true&w=majority', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-const reviewSchema = new mongoose.Schema({
-  bike: String,
-  text: String,
-  name: String,
-  timestamp: String,
-});
-const ratingSchema = new mongoose.Schema({
-  bike: String,
-  score: Number,
-  count: Number,
-  name: String,
-  timestamp: String,
-});
-const commentSchema = new mongoose.Schema({
-  text: String,
-  name: String,
-  timestamp: String,
-});
-const noteSchema = new mongoose.Schema({
-  text: String,
-  name: String,
-  timestamp: String,
-});
-
-const Review = mongoose.model('Review', reviewSchema);
-const Rating = mongoose.model('Rating', ratingSchema);
-const Comment = mongoose.model('Comment', commentSchema);
-const Note = mongoose.model('Note', noteSchema);
-
-app.get('/api/reviews', async (req, res) => {
-  const reviews = await Review.find();
-  res.json(reviews);
-});
-app.post('/api/reviews', async (req, res) => {
-  const review = new Review(req.body);
-  await review.save();
-  res.status(201).json(review);
-});
-
-app.get('/api/ratings', async (req, res) => {
-  const ratings = await Rating.find();
-  res.json(ratings);
-});
-app.post('/api/ratings', async (req, res) => {
-  const { bike, score, name } = req.body;
-  const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-  let rating = await Rating.findOne({ bike });
-  if (rating) {
-    rating.score = ((rating.score * rating.count) + score) / (rating.count + 1);
-    rating.count += 1;
-    rating.name = name;
-    rating.timestamp = timestamp;
-    await rating.save();
-  } else {
-    rating = new Rating({ bike, score, count: 1, name, timestamp });
-    await rating.save();
-  }
-  res.status(201).json(rating);
-});
-
-app.get('/api/comments', async (req, res) => {
-  const comments = await Comment.find();
-  res.json(comments);
-});
-app.post('/api/comments', async (req, res) => {
-  const comment = new Comment(req.body);
-  await comment.save();
-  res.status(201).json(comment);
-});
-
-app.get('/api/notes', async (req, res) => {
-  const notes = await Note.find();
-  res.json(notes);
-});
-app.post('/api/notes', async (req, res) => {
-  const note = new Note(req.body);
-  await note.save();
-  res.status(201).json(note);
-});
-
-app.get('/', (req, res) => {
-  res.send(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -467,9 +370,6 @@ app.get('/', (req, res) => {
       <li><a href="#" data-page="mahindra">Mahindra</a></li>
       <li><a href="#" data-page="bmw-motorrad">BMW Motorrad</a></li>
       <li><a href="#" data-page="ktm">KTM</a></li>
-      <li><a href="#" data-page="reviews">Reviews</a></li>
-      <li><a href="#" data-page="ratings">Ratings</a></li>
-      <li><a href="#" data-page="pricing">Pricing</a></li>
       <li><a href="#" data-page="comments">Comments</a></li>
       <li><a href="#" data-page="notepad">Notepad</a></li>
       <li><a href="#" data-page="contact">Contact</a></li>
@@ -482,8 +382,8 @@ app.get('/', (req, res) => {
       <div class="particles" id="particles"></div>
       <div class="hero-content fade-in">
         <h1 class="orbitron neon">MOTO<span class="gradient-text">VERSE</span></h1>
-        <p>Ride the Future, Embrace the Journey!</p>
-        <a href="#" class="btn btn-primary btn-pulse" data-page="royal-enfield">Explore Now</a>
+        <p>Ride the Future with Power and Style!</p>
+        <a href="#" class="btn btn-primary btn-pulse" data-page="royal-enfield">Unleash the Ride</a>
       </div>
     </section>
   </div>
@@ -675,204 +575,6 @@ app.get('/', (req, res) => {
     </div>
   </div>
 
-  <div id="reviews" class="page">
-    <h2 class="section-title orbitron fade-in">Customer Reviews</h2>
-    <div class="grid" id="review-list"></div>
-    <div class="form-group fade-in">
-      <h3 class="orbitron">Add a Review</h3>
-      <label for="review-bike">Bike:</label>
-      <select id="review-bike">
-        <option value="bullet-350">Royal Enfield Bullet 350</option>
-        <option value="classic-350">Royal Enfield Classic 350</option>
-        <option value="himalayan">Royal Enfield Himalayan</option>
-        <option value="pulsar-200ns">Bajaj Pulsar 200NS</option>
-        <option value="pulsar-rs200">Bajaj Pulsar RS200</option>
-        <option value="platinum-110">Bajaj Platinum 110</option>
-        <option value="splendor">Hero Splendor</option>
-        <option value="passion-pro">Hero Passion Pro</option>
-        <option value="vida-v1">Hero Vida V1</option>
-        <option value="apache-rtr-160">TVS Apache RTR 160</option>
-        <option value="apache-rr-310">TVS Apache RR 310</option>
-        <option value="ntorq-125">TVS Ntorq 125</option>
-        <option value="mojo-300">Mahindra Mojo 300</option>
-        <option value="rooster-250">Mahindra Rooster 250</option>
-        <option value="r-1250-gs">BMW R 1250 GS</option>
-        <option value="f-900-gs">BMW F 900 GS</option>
-        <option value="s-1000-rr">BMW S 1000 RR</option>
-        <option value="duke-390">KTM Duke 390</option>
-        <option value="duke-200">KTM Duke 200</option>
-        <option value="adventure-390">KTM Adventure 390</option>
-      </select>
-      <label for="review-text">Review:</label>
-      <textarea id="review-text" rows="4" placeholder="Write your review..."></textarea>
-      <label for="review-name">Name:</label>
-      <input type="text" id="review-name" placeholder="Your name...">
-      <button onclick="addReview()">Submit Review</button>
-    </div>
-  </div>
-
-  <div id="ratings" class="page">
-    <h2 class="section-title orbitron fade-in">Customer Ratings</h2>
-    <div class="grid" id="rating-list"></div>
-    <div class="form-group fade-in">
-      <h3 class="orbitron">Add a Rating</h3>
-      <label for="rating-bike">Bike:</label>
-      <select id="rating-bike">
-        <option value="bullet-350">Royal Enfield Bullet 350</option>
-        <option value="classic-350">Royal Enfield Classic 350</option>
-        <option value="himalayan">Royal Enfield Himalayan</option>
-        <option value="pulsar-200ns">Bajaj Pulsar 200NS</option>
-        <option value="pulsar-rs200">Bajaj Pulsar RS200</option>
-        <option value="platinum-110">Bajaj Platinum 110</option>
-        <option value="splendor">Hero Splendor</option>
-        <option value="passion-pro">Hero Passion Pro</option>
-        <option value="vida-v1">Hero Vida V1</option>
-        <option value="apache-rtr-160">TVS Apache RTR 160</option>
-        <option value="apache-rr-310">TVS Apache RR 310</option>
-        <option value="ntorq-125">TVS Ntorq 125</option>
-        <option value="mojo-300">Mahindra Mojo 300</option>
-        <option value="rooster-250">Mahindra Rooster 250</option>
-        <option value="r-1250-gs">BMW R 1250 GS</option>
-        <option value="f-900-gs">BMW F 900 GS</option>
-        <option value="s-1000-rr">BMW S 1000 RR</option>
-        <option value="duke-390">KTM Duke 390</option>
-        <option value="duke-200">KTM Duke 200</option>
-        <option value="adventure-390">KTM Adventure 390</option>
-      </select>
-      <label for="rating-score">Rating (1-5):</label>
-      <input type="number" id="rating-score" min="1" max="5" placeholder="1-5">
-      <label for="rating-name">Name:</label>
-      <input type="text" id="rating-name" placeholder="Your name...">
-      <button onclick="addRating()">Submit Rating</button>
-    </div>
-  </div>
-
-  <div id="pricing" class="page">
-    <h2 class="section-title orbitron fade-in">Pricing</h2>
-    <div class="grid">
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Royal Enfield Bullet 350</h3>
-          <p class="card-desc">$2,200</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Royal Enfield Classic 350</h3>
-          <p class="card-desc">$2,300</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Royal Enfield Himalayan</h3>
-          <p class="card-desc">$4,000</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Bajaj Pulsar 200NS</h3>
-          <p class="card-desc">$1,800</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Bajaj Pulsar RS200</h3>
-          <p class="card-desc">$2,000</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Bajaj Platinum 110</h3>
-          <p class="card-desc">$1,000</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Hero Splendor</h3>
-          <p class="card-desc">$1,000</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Hero Passion Pro</h3>
-          <p class="card-desc">$1,200</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Hero Vida V1</h3>
-          <p class="card-desc">$1,800</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">TVS Apache RTR 160</h3>
-          <p class="card-desc">$1,500</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">TVS Apache RR 310</h3>
-          <p class="card-desc">$3,500</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">TVS Ntorq 125</h3>
-          <p class="card-desc">$1,200</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Mahindra Mojo 300</h3>
-          <p class="card-desc">$2,000</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">Mahindra Rooster 250</h3>
-          <p class="card-desc">$2,500</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">BMW R 1250 GS</h3>
-          <p class="card-desc">$18,500</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">BMW F 900 GS</h3>
-          <p class="card-desc">$12,000</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">BMW S 1000 RR</h3>
-          <p class="card-desc">$20,000</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">KTM Duke 390</h3>
-          <p class="card-desc">$5,500</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">KTM Duke 200</h3>
-          <p class="card-desc">$3,000</p>
-        </div>
-      </article>
-      <article class="card hover-lift fade-in">
-        <div class="card-content">
-          <h3 class="card-title">KTM Adventure 390</h3>
-          <p class="card-desc">$6,500</p>
-        </div>
-      </article>
-    </div>
-  </div>
-
   <div id="comments" class="page">
     <h2 class="section-title orbitron fade-in">Customer Comments</h2>
     <div class="grid" id="comment-list"></div>
@@ -985,61 +687,7 @@ app.get('/', (req, res) => {
       document.body.style.overflow = '';
     }
 
-    async function addReview() {
-      const bike = $('#review-bike').value;
-      const text = $('#review-text').value.trim();
-      const name = $('#review-name').value.trim();
-      if (!text || !name) {
-        alert('Please fill in both review and name fields.');
-        return;
-      }
-      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-      try {
-        const response = await fetch('/api/reviews', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bike, text, name, timestamp })
-        });
-        if (response.ok) {
-          $('#review-text').value = '';
-          $('#review-name').value = '';
-          await updateReviews();
-        } else {
-          alert('Failed to submit review. Please try again.');
-        }
-      } catch (error) {
-        alert('Error submitting review: ' + error.message);
-      }
-    }
-
-    async function addRating() {
-      const bike = $('#rating-bike').value;
-      const score = parseInt($('#rating-score').value);
-      const name = $('#rating-name').value.trim();
-      if (!score || score < 1 || score > 5 || !name) {
-        alert('Please enter a valid rating (1-5) and name.');
-        return;
-      }
-      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-      try {
-        const response = await fetch('/api/ratings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bike, score, name, timestamp })
-        });
-        if (response.ok) {
-          $('#rating-score').value = '';
-          $('#rating-name').value = '';
-          await updateRatings();
-        } else {
-          alert('Failed to submit rating. Please try again.');
-        }
-      } catch (error) {
-        alert('Error submitting rating: ' + error.message);
-      }
-    }
-
-    async function addComment() {
+    function addComment() {
       const text = $('#comment-text').value.trim();
       const name = $('#comment-name').value.trim();
       if (!text || !name) {
@@ -1047,25 +695,15 @@ app.get('/', (req, res) => {
         return;
       }
       const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-      try {
-        const response = await fetch('/api/comments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, name, timestamp })
-        });
-        if (response.ok) {
-          $('#comment-text').value = '';
-          $('#comment-name').value = '';
-          await updateComments();
-        } else {
-          alert('Failed to submit comment. Please try again.');
-        }
-      } catch (error) {
-        alert('Error submitting comment: ' + error.message);
-      }
+      let comments = JSON.parse(localStorage.getItem('comments') || '[]');
+      comments.push({ text, name, timestamp });
+      localStorage.setItem('comments', JSON.stringify(comments));
+      $('#comment-text').value = '';
+      $('#comment-name').value = '';
+      updateComments();
     }
 
-    async function addNote() {
+    function addNote() {
       const text = $('#note-text').value.trim();
       const name = $('#note-name').value.trim();
       if (!text || !name) {
@@ -1073,111 +711,51 @@ app.get('/', (req, res) => {
         return;
       }
       const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-      try {
-        const response = await fetch('/api/notes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, name, timestamp })
-        });
-        if (response.ok) {
-          $('#note-text').value = '';
-          $('#note-name').value = '';
-          await updateNotes();
-        } else {
-          alert('Failed to submit note. Please try again.');
-        }
-      } catch (error) {
-        alert('Error submitting note: ' + error.message);
-      }
+      let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+      notes.push({ text, name, timestamp });
+      localStorage.setItem('notes', JSON.stringify(notes));
+      $('#note-text').value = '';
+      $('#note-name').value = '';
+      updateNotes();
     }
 
-    async function updateReviews() {
-      try {
-        const response = await fetch('/api/reviews');
-        if (!response.ok) throw new Error('Failed to fetch reviews');
-        const reviews = await response.json();
-        const reviewList = $('#review-list');
-        reviewList.innerHTML = reviews.map(r => `
-          <article class="card hover-lift fade-in">
-            <div class="card-content">
-              <h3 class="card-title">${models[r.bike]?.name || r.bike}</h3>
-              <p class="card-desc">${r.text} - ${r.name} (${r.timestamp})</p>
-            </div>
-          </article>
-        `).join('');
-      } catch (error) {
-        alert('Error fetching reviews: ' + error.message);
-      }
+    function updateComments() {
+      const comments = JSON.parse(localStorage.getItem('comments') || '[]');
+      const commentList = $('#comment-list');
+      commentList.innerHTML = comments.map(c => `
+        <article class="card hover-lift fade-in">
+          <div class="card-content">
+            <p class="card-desc">${c.text} - ${c.name} (${c.timestamp})</p>
+          </div>
+        </article>
+      `).join('');
     }
 
-    async function updateRatings() {
-      try {
-        const response = await fetch('/api/ratings');
-        if (!response.ok) throw new Error('Failed to fetch ratings');
-        const ratings = await response.json();
-        const ratingList = $('#rating-list');
-        ratingList.innerHTML = ratings.map(r => `
-          <article class="card hover-lift fade-in">
-            <div class="card-content">
-              <h3 class="card-title">${models[r.bike]?.name || r.bike}</h3>
-              <p class="card-desc">${r.score.toFixed(1)}/5 (${r.count} reviews) - ${r.name} (${r.timestamp})</p>
-            </div>
-          </article>
-        `).join('');
-      } catch (error) {
-        alert('Error fetching ratings: ' + error.message);
-      }
-    }
-
-    async function updateComments() {
-      try {
-        const response = await fetch('/api/comments');
-        if (!response.ok) throw new Error('Failed to fetch comments');
-        const comments = await response.json();
-        const commentList = $('#comment-list');
-        commentList.innerHTML = comments.map(c => `
-          <article class="card hover-lift fade-in">
-            <div class="card-content">
-              <p class="card-desc">${c.text} - ${c.name} (${c.timestamp})</p>
-            </div>
-          </article>
-        `).join('');
-      } catch (error) {
-        alert('Error fetching comments: ' + error.message);
-      }
-    }
-
-    async function updateNotes() {
-      try {
-        const response = await fetch('/api/notes');
-        if (!response.ok) throw new Error('Failed to fetch notes');
-        const notes = await response.json();
-        const noteList = $('#note-list');
-        noteList.innerHTML = notes.map(n => `
-          <article class="card hover-lift fade-in">
-            <div class="card-content">
-              <p class="card-desc"><pre>${n.text}</pre> - ${n.name} (${n.timestamp})</p>
-            </div>
-          </article>
-        `).join('');
-      } catch (error) {
-        alert('Error fetching notes: ' + error.message);
-      }
+    function updateNotes() {
+      const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+      const noteList = $('#note-list');
+      noteList.innerHTML = notes.map(n => `
+        <article class="card hover-lift fade-in">
+          <div class="card-content">
+            <p class="card-desc"><pre>${n.text}</pre> - ${n.name} (${n.timestamp})</p>
+          </div>
+        </article>
+      `).join('');
     }
 
     window.addEventListener('load', () => {
       setTimeout(() => $('#loadingScreen').classList.add('hidden'), 1000);
 
       const particlesDiv = $('#particles');
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 150; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
         const size = Math.random() * 6 + 3;
-        particle.style.width = \`\${size}px\`;
-        particle.style.height = \`\${size}px\`;
-        particle.style.left = \`\${Math.random() * 100}%\`;
-        particle.style.animationDuration = \`\${Math.random() * 5 + 5}s\`;
-        particle.style.animationDelay = \`\${Math.random() * 5}s\`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.animationDuration = `${Math.random() * 5 + 5}s`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
         particlesDiv.appendChild(particle);
       }
 
@@ -1215,17 +793,9 @@ app.get('/', (req, res) => {
       }, { threshold: 0.2 });
       $$('.fade-in').forEach(el => observer.observe(el));
 
-      updateReviews();
-      updateRatings();
       updateComments();
       updateNotes();
     });
   </script>
 </body>
 </html>
-  `);
-});
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
