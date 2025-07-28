@@ -397,6 +397,7 @@
       margin: 25px auto;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 </head>
 <body>
   <div class="loading-screen" id="loadingScreen">
@@ -719,24 +720,33 @@
       document.body.style.overflow = '';
     }
 
-    async function fetchData(file) {
-      try {
-        const response = await fetch(`https://raw.githubusercontent.com/MotooVerse/MOTOVERSE/main/${file}`);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const text = await response.text();
-        return text ? JSON.parse(text) : [];
-      } catch (error) {
-        console.error(`Error fetching ${file}:`, error);
-        alert(`Failed to load ${file}. Displaying an empty list. Check console for details.`);
-        return [];
-      }
-    }
-
     async function updateReviews() {
       const reviewList = $('#review-list');
       reviewList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>';
-      const reviews = await fetchData('reviews.json');
-      console.log('Fetched reviews:', reviews); // Debug log
+      let pyodide = await loadPyodide();
+      await pyodide.loadPackage("micropip");
+      await pyodide.runPythonAsync(`
+        from js import document, console
+        import asyncio
+        import json
+
+        class ReviewManager:
+            def __init__(self):
+                self.reviews = []
+
+            def add_review(self, text, name):
+                timestamp = document.getElementById("review-name").value  # Using name field as a placeholder for timestamp simulation
+                self.reviews.append({"text": text, "name": name, "timestamp": timestamp})
+                return self.reviews
+
+            def get_reviews(self):
+                return self.reviews if self.reviews else [{"text": "No reviews available.", "name": "System", "timestamp": "N/A"}]
+
+        review_manager = ReviewManager()
+        reviews = review_manager.get_reviews()
+        json.dumps(reviews)
+      `);
+      const reviews = pyodide.globals.get('reviews').toJs();
       reviewList.innerHTML = reviews.map(r => `
         <article class="card hover-lift fade-in">
           <div class="card-content">
@@ -754,20 +764,17 @@
         alert('Please fill in both review and name fields.');
         return;
       }
-      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-      try {
-        const reviews = await fetchData('reviews.json');
-        reviews.push({ text, name, timestamp });
-        // Simulate local save for now
-        console.log('Simulated review save:', { text, name, timestamp });
-        alert('Review submitted locally for simulation. Check console.');
-        $('#review-text').value = '';
-        $('#review-name').value = '';
-        await updateReviews();
-      } catch (error) {
-        console.error('Error adding review:', error);
-        alert('Failed to add review. Check console for details.');
-      }
+      let pyodide = await loadPyodide();
+      await pyodide.loadPackage("micropip");
+      await pyodide.runPythonAsync(`
+        from js import document, console, alert
+        review_manager.add_review("${text}", "${name}")
+        console.log("Review added:", {"text": "${text}", "name": "${name}", "timestamp": "${name}"})
+        alert("Review submitted locally for simulation. Check console.")
+      `);
+      $('#review-text').value = '';
+      $('#review-name').value = '';
+      await updateReviews();
     }
 
     window.addEventListener('load', () => {
