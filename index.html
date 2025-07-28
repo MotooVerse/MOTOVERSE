@@ -1,3 +1,107 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const app = express();
+const port = 3000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// MongoDB connection (replace with your MongoDB Atlas connection string or local MongoDB URI)
+mongoose.connect('mongodb+srv://<username>:<password>@cluster0.mongodb.net/motoverse?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Schemas
+const reviewSchema = new mongoose.Schema({
+  bike: String,
+  text: String,
+  name: String,
+  timestamp: String,
+});
+const ratingSchema = new mongoose.Schema({
+  bike: String,
+  score: Number,
+  count: Number,
+  name: String,
+});
+const commentSchema = new mongoose.Schema({
+  text: String,
+  name: String,
+  timestamp: String,
+});
+const noteSchema = new mongoose.Schema({
+  text: String,
+  name: String,
+  timestamp: String,
+});
+
+const Review = mongoose.model('Review', reviewSchema);
+const Rating = mongoose.model('Rating', ratingSchema);
+const Comment = mongoose.model('Comment', commentSchema);
+const Note = mongoose.model('Note', noteSchema);
+
+// API Endpoints
+// Reviews
+app.get('/api/reviews', async (req, res) => {
+  const reviews = await Review.find();
+  res.json(reviews);
+});
+app.post('/api/reviews', async (req, res) => {
+  const review = new Review(req.body);
+  await review.save();
+  res.status(201).json(review);
+});
+
+// Ratings
+app.get('/api/ratings', async (req, res) => {
+  const ratings = await Rating.find();
+  res.json(ratings);
+});
+app.post('/api/ratings', async (req, res) => {
+  const { bike, score, name } = req.body;
+  const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
+  let rating = await Rating.findOne({ bike });
+  if (rating) {
+    rating.score = ((rating.score * rating.count) + score) / (rating.count + 1);
+    rating.count += 1;
+    rating.name = name;
+    await rating.save();
+  } else {
+    rating = new Rating({ bike, score, count: 1, name, timestamp });
+    await rating.save();
+  }
+  res.status(201).json(rating);
+});
+
+// Comments
+app.get('/api/comments', async (req, res) => {
+  const comments = await Comment.find();
+  res.json(comments);
+});
+app.post('/api/comments', async (req, res) => {
+  const comment = new Comment(req.body);
+  await comment.save();
+  res.status(201).json(comment);
+});
+
+// Notes
+app.get('/api/notes', async (req, res) => {
+  const notes = await Note.find();
+  res.json(notes);
+});
+app.post('/api/notes', async (req, res) => {
+  const note = new Note(req.body);
+  await note.save();
+  res.status(201).json(note);
+});
+
+// Serve HTML
+app.get('/', (req, res) => {
+  res.send(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +109,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MotoVerse - Motorcycle Universe</title>
   <style>
-    /* Existing CSS remains unchanged */
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap');
 
     :root {
@@ -31,6 +134,9 @@
       color: white;
       line-height: 1.6;
       overflow-x: hidden;
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .orbitron { font-family: 'Orbitron', sans-serif; }
@@ -98,12 +204,18 @@
     .page {
       display: none;
       padding: 60px 15px;
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
     }
     .page.active { display: block; }
 
-    .hero { min-height: 80vh; text-align: center; position: relative; }
+    .hero {
+      min-height: 80vh;
+      text-align: center;
+      position: relative;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+      overflow: hidden;
+    }
     .hero img {
       position: absolute;
       inset: 0;
@@ -111,25 +223,91 @@
       height: 100%;
       object-fit: cover;
       opacity: 0.7;
+      z-index: -1;
     }
     .hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+      z-index: -1;
     }
-    .hero-content { position: relative; z-index: 1; padding: 20px; }
-    .hero h1 { font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 15px; }
-    .hero p { max-width: 500px; margin: 0 auto 20px; }
+    .particles {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+    }
+    .particle {
+      position: absolute;
+      background: var(--primary);
+      opacity: 0.5;
+      border-radius: 50%;
+      animation: float 10s infinite linear;
+    }
+    @keyframes float {
+      0% { transform: translateY(0); opacity: 0.5; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-100vh); opacity: 0.2; }
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 40px 20px;
+    }
+    .hero h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto 30px;
+      font-size: 1.2rem;
+      color: var(--text-light);
+    }
+    .btn-pulse {
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 10px var(--primary); }
+      50% { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+      100% { transform: scale(1); box-shadow: 0 0 10px var(--primary); }
+    }
 
-    .btn { padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 700; transition: transform 0.2s ease; }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn:hover { transform: translateY(-2px); }
+    .btn {
+      padding: 12px 24px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
 
-    .grid { display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
-    .card { border-radius: 10px; overflow: hidden; background: var(--glass); }
-    .card img { width: 100%; height: 150px; object-fit: cover; }
-    .card-content { padding: 15px; }
+    .grid {
+      display: grid;
+      gap: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    .card {
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--glass);
+    }
+    .card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    .card-content {
+      padding: 15px;
+    }
 
     .modal {
       position: fixed;
@@ -139,23 +317,74 @@
       place-content: center;
       z-index: 200;
     }
-    .modal.active { display: grid; }
-    .modal-content { background: var(--bg-dark); border-radius: 15px; max-width: 95vw; max-height: 95vh; overflow-y: auto; padding: 15px; }
-    .modal-header { padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
-    .modal-title { font-size: 1.5rem; color: var(--primary); }
-    .modal-close { background: none; border: none; color: var(--primary); font-size: 1.2rem; cursor: pointer; }
-    .modal-body { padding: 10px 0; }
-    .model-card { border-radius: 10px; overflow: hidden; }
-    .model-info { padding: 10px; }
-    .model-name { font-size: 1.1rem; color: var(--primary); }
-    .model-price { font-size: 0.9rem; margin: 5px 0; }
-    .model-specs { font-size: 0.8rem; }
-    .spec-item { display: flex; justify-content: space-between; margin: 3px 0; }
-    .spec-value { color: var(--primary); }
+    .modal.active {
+      display: grid;
+    }
+    .modal-content {
+      background: var(--bg-dark);
+      border-radius: 15px;
+      max-width: 95vw;
+      max-height: 95vh;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    .modal-header {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+    }
+    .modal-title {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 10px 0;
+    }
+    .model-card {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .model-info {
+      padding: 10px;
+    }
+    .model-name {
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+    .model-price {
+      font-size: 0.9rem;
+      margin: 5px 0;
+    }
+    .model-specs {
+      font-size: 0.8rem;
+    }
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 3px 0;
+    }
+    .spec-value {
+      color: var(--primary);
+    }
 
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; }
-    .form-group input, .form-group textarea, .form-group select {
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
       width: 100%;
       padding: 8px;
       border-radius: 10px;
@@ -163,16 +392,51 @@
       background: var(--glass);
       color: white;
     }
-    .form-group button { padding: 10px 20px; border-radius: 20px; background: var(--primary); border: none; color: white; cursor: pointer; }
+    .form-group textarea {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .form-group button {
+      padding: 10px 20px;
+      border-radius: 20px;
+      background: var(--primary);
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
 
-    footer { background: rgba(0, 0, 0, 0.6); padding: 30px 15px; text-align: center; }
-    .footer-title { font-size: 1.5rem; }
-    .footer-desc { font-size: 0.9rem; color: var(--text-light); max-width: 400px; margin: 10px auto; }
+    footer {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 30px 15px;
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-title {
+      font-size: 1.5rem;
+    }
+    .footer-desc {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      max-width: 400px;
+      margin: 10px auto;
+    }
 
     @media (max-width: 768px) {
-      nav ul { gap: 8px; }
-      .hero h1 { font-size: 2rem; }
-      .section-title { font-size: 1.8rem; }
+      nav ul {
+        gap: 8px;
+      }
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+      .section-title {
+        font-size: 1.8rem;
+      }
+      body {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -198,22 +462,23 @@
       <li><a href="#" data-page="ratings">Ratings</a></li>
       <li><a href="#" data-page="pricing">Pricing</a></li>
       <li><a href="#" data-page="comments">Comments</a></li>
+      <li><a href="#" data-page="notepad">Notepad</a></li>
       <li><a href="#" data-page="contact">Contact</a></li>
     </ul>
   </nav>
 
   <div id="home" class="page active">
     <section class="hero">
-      <img src="https://github.com/MotooVerse/MOTOVERSE/blob/main/download.jpeg?raw=true" alt="Motorcycle on road" loading="lazy">
+      <img src="https://github.com/MotooVerse/MOTOVERSE/blob/main/download.jpg?raw=true" alt="Motorcycle on road" loading="lazy">
+      <div class="particles" id="particles"></div>
       <div class="hero-content fade-in">
         <h1 class="orbitron neon">MOTO<span class="gradient-text">VERSE</span></h1>
-        <p>Explore the finest Indian and German motorcycles!</p>
-        <a href="#" class="btn btn-primary" data-page="royal-enfield">Explore Now</a>
+        <p>Ride into the Ultimate Motorcycle Universe!</p>
+        <a href="#" class="btn btn-primary btn-pulse" data-page="royal-enfield">Explore Now</a>
       </div>
     </section>
   </div>
 
-  <!-- The rest of the HTML remains unchanged -->
   <div id="royal-enfield" class="page">
     <h2 class="section-title orbitron fade-in">Royal Enfield</h2>
     <h3 class="orbitron fade-in">Classic Series</h3>
@@ -612,6 +877,19 @@
     </div>
   </div>
 
+  <div id="notepad" class="page">
+    <h2 class="section-title orbitron fade-in">Notepad</h2>
+    <div class="grid" id="note-list"></div>
+    <div class="form-group fade-in">
+      <h3 class="orbitron">Add a Note</h3>
+      <label for="note-text">Note/Code:</label>
+      <textarea id="note-text" rows="6" placeholder="Write your note or code..."></textarea>
+      <label for="note-name">Name:</label>
+      <input type="text" id="note-name" placeholder="Your name...">
+      <button onclick="addNote()">Save Note</button>
+    </div>
+  </div>
+
   <div id="contact" class="page">
     <h2 class="section-title orbitron fade-in">Contact Us</h2>
     <div class="card hover-lift fade-in">
@@ -705,7 +983,7 @@
       if (text && name) {
         const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
         try {
-          const response = await fetch('http://localhost:3000/api/reviews', {
+          const response = await fetch('/api/reviews', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ bike, text, name, timestamp })
@@ -727,7 +1005,7 @@
       const name = $('#rating-name').value;
       if (score >= 1 && score <= 5 && name) {
         try {
-          const response = await fetch('http://localhost:3000/api/ratings', {
+          const response = await fetch('/api/ratings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ bike, score, name })
@@ -749,7 +1027,7 @@
       if (text && name) {
         const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
         try {
-          const response = await fetch('http://localhost:3000/api/comments', {
+          const response = await fetch('/api/comments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text, name, timestamp })
@@ -765,9 +1043,31 @@
       }
     }
 
+    async function addNote() {
+      const text = $('#note-text').value;
+      const name = $('#note-name').value;
+      if (text && name) {
+        const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
+        try {
+          const response = await fetch('/api/notes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, name, timestamp })
+          });
+          if (response.ok) {
+            $('#note-text').value = '';
+            $('#note-name').value = '';
+            await updateNotes();
+          }
+        } catch (error) {
+          console.error('Error adding note:', error);
+        }
+      }
+    }
+
     async function updateReviews() {
       try {
-        const response = await fetch('http://localhost:3000/api/reviews');
+        const response = await fetch('/api/reviews');
         const reviews = await response.json();
         const reviewList = $('#review-list');
         reviewList.innerHTML = reviews.map(r => `
@@ -785,7 +1085,7 @@
 
     async function updateRatings() {
       try {
-        const response = await fetch('http://localhost:3000/api/ratings');
+        const response = await fetch('/api/ratings');
         const ratings = await response.json();
         const ratingList = $('#rating-list');
         ratingList.innerHTML = ratings.map(r => `
@@ -803,7 +1103,7 @@
 
     async function updateComments() {
       try {
-        const response = await fetch('http://localhost:3000/api/comments');
+        const response = await fetch('/api/comments');
         const comments = await response.json();
         const commentList = $('#comment-list');
         commentList.innerHTML = comments.map(c => `
@@ -818,8 +1118,37 @@
       }
     }
 
+    async function updateNotes() {
+      try {
+        const response = await fetch('/api/notes');
+        const notes = await response.json();
+        const noteList = $('#note-list');
+        noteList.innerHTML = notes.map(n => `
+          <article class="card hover-lift fade-in">
+            <div class="card-content">
+              <p class="card-desc"><pre>${n.text}</pre> - ${n.name} (${n.timestamp})</p>
+            </div>
+          </article>
+        `).join('');
+      } catch (error) {
+        console.error('Error fetching notes:', error);
+      }
+    }
+
     window.addEventListener('load', () => {
       setTimeout(() => $('#loadingScreen').classList.add('hidden'), 1000);
+
+      // Generate particles for home page
+      const particlesDiv = $('#particles');
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.width = \`\${Math.random() * 5 + 2}px\`;
+        particle.style.height = particle.style.width;
+        particle.style.left = \`\${Math.random() * 100}%\`;
+        particle.style.animationDelay = \`\${Math.random() * 10}s\`;
+        particlesDiv.appendChild(particle);
+      }
 
       $$('nav a').forEach(link => {
         link.addEventListener('click', (e) => {
@@ -858,7 +1187,14 @@
       updateReviews();
       updateRatings();
       updateComments();
+      updateNotes();
     });
   </script>
 </body>
 </html>
+  `);
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
