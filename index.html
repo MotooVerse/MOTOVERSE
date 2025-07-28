@@ -416,9 +416,7 @@
       <li><a href="#" data-page="mahindra">Mahindra</a></li>
       <li><a href="#" data-page="bmw-motorrad">BMW Motorrad</a></li>
       <li><a href="#" data-page="ktm">KTM</a></li>
-      <li><a href="#" data-page="comments">Comments</a></li>
       <li><a href="#" data-page="reviews">Reviews</a></li>
-      <li><a href="#" data-page="notepad">Notepad</a></li>
       <li><a href="#" data-page="contact">Contact</a></li>
     </ul>
   </nav>
@@ -622,19 +620,6 @@
     </div>
   </div>
 
-  <div id="comments" class="page">
-    <h2 class="section-title orbitron fade-in">Customer Comments</h2>
-    <div class="grid" id="comment-list"></div>
-    <div class="form-group fade-in">
-      <h3 class="orbitron">Add a Comment</h3>
-      <label for="comment-text">Comment:</label>
-      <textarea id="comment-text" rows="4" placeholder="Write your comment..."></textarea>
-      <label for="comment-name">Name:</label>
-      <input type="text" id="comment-name" placeholder="Your name...">
-      <button onclick="addComment()">Submit Comment</button>
-    </div>
-  </div>
-
   <div id="reviews" class="page">
     <h2 class="section-title orbitron fade-in">Customer Reviews</h2>
     <div class="grid" id="review-list"></div>
@@ -648,26 +633,13 @@
     </div>
   </div>
 
-  <div id="notepad" class="page">
-    <h2 class="section-title orbitron fade-in">Notepad</h2>
-    <div class="grid" id="note-list"></div>
-    <div class="form-group fade-in">
-      <h3 class="orbitron">Add a Note</h3>
-      <label for="note-text">Note/Code:</label>
-      <textarea id="note-text" rows="6" placeholder="Write your note or code..."></textarea>
-      <label for="note-name">Name:</label>
-      <input type="text" id="note-name" placeholder="Your name...">
-      <button onclick="addNote()">Save Note</button>
-    </div>
-  </div>
-
   <div id="contact" class="page">
     <h2 class="section-title orbitron fade-in">Contact Us</h2>
     <div class="card hover-lift fade-in">
       <div class="card-content">
-        <p>Email: support@motoverse.com</p>
-        <p>Phone: +1-800-MOTO123</p>
-        <p>Address: 123 Bike Lane, Moto City</p>
+        <p>Email: MKbikeforrent80081@.gmail.com</p>
+        <p>Helpline No: 9816780081</p>
+        <p>Address: Himachal Pradesh, Shimla</p>
       </div>
     </div>
   </div>
@@ -755,22 +727,9 @@
         return text ? JSON.parse(text) : [];
       } catch (error) {
         console.error(`Error fetching ${file}:`, error);
+        alert(`Failed to load ${file}. Check console for details.`);
         return [];
       }
-    }
-
-    async function updateComments() {
-      const commentList = $('#comment-list');
-      commentList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>';
-      const comments = await fetchData('comments.json');
-      commentList.innerHTML = comments.map(c => `
-        <article class="card hover-lift fade-in">
-          <div class="card-content">
-            <p class="card-desc">${c.text} - ${c.name} (${c.timestamp})</p>
-          </div>
-        </article>
-      `).join('') || '<p>No comments available.</p>';
-      commentList.classList.add('visible');
     }
 
     async function updateReviews() {
@@ -787,38 +746,6 @@
       reviewList.classList.add('visible');
     }
 
-    async function updateNotes() {
-      const noteList = $('#note-list');
-      noteList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>';
-      const notes = await fetchData('notes.json');
-      noteList.innerHTML = notes.map(n => `
-        <article class="card hover-lift fade-in">
-          <div class="card-content">
-            <p class="card-desc"><pre>${n.text}</pre> - ${n.name} (${n.timestamp})</p>
-          </div>
-        </article>
-      `).join('') || '<p>No notes available.</p>';
-      noteList.classList.add('visible');
-    }
-
-    async function addComment() {
-      const text = $('#comment-text').value.trim();
-      const name = $('#comment-name').value.trim();
-      if (!text || !name) {
-        alert('Please fill in both comment and name fields.');
-        return;
-      }
-      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-      const comments = await fetchData('comments.json');
-      comments.push({ text, name, timestamp });
-      // Simulate local save for now
-      console.log('Simulated comment save:', { text, name, timestamp });
-      alert('Comment submitted locally for simulation. Check console.');
-      $('#comment-text').value = '';
-      $('#comment-name').value = '';
-      updateComments();
-    }
-
     async function addReview() {
       const text = $('#review-text').value.trim();
       const name = $('#review-name').value.trim();
@@ -827,32 +754,19 @@
         return;
       }
       const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-      const reviews = await fetchData('reviews.json');
-      reviews.push({ text, name, timestamp });
-      // Simulate local save for now
-      console.log('Simulated review save:', { text, name, timestamp });
-      alert('Review submitted locally for simulation. Check console.');
-      $('#review-text').value = '';
-      $('#review-name').value = '';
-      updateReviews();
-    }
-
-    async function addNote() {
-      const text = $('#note-text').value.trim();
-      const name = $('#note-name').value.trim();
-      if (!text || !name) {
-        alert('Please fill in both note and name fields.');
-        return;
+      try {
+        const reviews = await fetchData('reviews.json');
+        reviews.push({ text, name, timestamp });
+        // Simulate local save for now
+        console.log('Simulated review save:', { text, name, timestamp });
+        alert('Review submitted locally for simulation. Check console.');
+        $('#review-text').value = '';
+        $('#review-name').value = '';
+        await updateReviews();
+      } catch (error) {
+        console.error('Error adding review:', error);
+        alert('Failed to add review. Check console for details.');
       }
-      const timestamp = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
-      const notes = await fetchData('notes.json');
-      notes.push({ text, name, timestamp });
-      // Simulate local save for now
-      console.log('Simulated note save:', { text, name, timestamp });
-      alert('Note submitted locally for simulation. Check console.');
-      $('#note-text').value = '';
-      $('#note-name').value = '';
-      updateNotes();
     }
 
     window.addEventListener('load', () => {
@@ -876,9 +790,7 @@
           e.preventDefault();
           const pageId = link.getAttribute('data-page');
           showPage(pageId);
-          if (pageId === 'comments') updateComments();
           if (pageId === 'reviews') updateReviews();
-          if (pageId === 'notepad') updateNotes();
         });
       });
 
@@ -908,9 +820,7 @@
       }, { threshold: 0.2 });
       $$('.fade-in').forEach(el => observer.observe(el));
 
-      updateComments();
       updateReviews();
-      updateNotes();
     });
   </script>
 </body>
