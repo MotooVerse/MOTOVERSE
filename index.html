@@ -751,7 +751,8 @@
       try {
         const response = await fetch(`https://raw.githubusercontent.com/MotooVerse/MOTOVERSE/main/${file}`);
         if (!response.ok) throw new Error('Network response was not ok');
-        return await response.json();
+        const text = await response.text();
+        return text ? JSON.parse(text) : [];
       } catch (error) {
         console.error(`Error fetching ${file}:`, error);
         return [];
@@ -759,8 +760,9 @@
     }
 
     async function updateComments() {
-      const comments = await fetchData('comments.json');
       const commentList = $('#comment-list');
+      commentList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>'; // Show loading
+      const comments = await fetchData('comments.json');
       commentList.innerHTML = comments.map(c => `
         <article class="card hover-lift fade-in">
           <div class="card-content">
@@ -768,11 +770,13 @@
           </div>
         </article>
       `).join('');
+      commentList.classList.add('visible'); // Force visibility
     }
 
     async function updateReviews() {
-      const reviews = await fetchData('reviews.json');
       const reviewList = $('#review-list');
+      reviewList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>'; // Show loading
+      const reviews = await fetchData('reviews.json');
       reviewList.innerHTML = reviews.map(r => `
         <article class="card hover-lift fade-in">
           <div class="card-content">
@@ -780,11 +784,13 @@
           </div>
         </article>
       `).join('');
+      reviewList.classList.add('visible'); // Force visibility
     }
 
     async function updateNotes() {
-      const notes = await fetchData('notes.json');
       const noteList = $('#note-list');
+      noteList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>'; // Show loading
+      const notes = await fetchData('notes.json');
       noteList.innerHTML = notes.map(n => `
         <article class="card hover-lift fade-in">
           <div class="card-content">
@@ -792,6 +798,7 @@
           </div>
         </article>
       `).join('');
+      noteList.classList.add('visible'); // Force visibility
     }
 
     async function addComment() {
@@ -843,12 +850,18 @@
     }
 
     async function saveData(file, data) {
-      const response = await fetch('/api/save', {
+      const response = await fetch('https://api.github.com/repos/MotooVerse/MOTOVERSE/dispatches', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file, data })
+        headers: {
+          'Authorization': 'token YOUR_PAT_HERE',
+          'Accept': 'application/vnd.github.3+json'
+        },
+        body: JSON.stringify({
+          event_type: 'save-data',
+          client_payload: { file, data: JSON.stringify(data, null, 2) }
+        })
       });
-      if (!response.ok) throw new Error('Failed to save data');
+      if (!response.ok) throw new Error('Failed to trigger GitHub Action');
     }
 
     window.addEventListener('load', () => {
