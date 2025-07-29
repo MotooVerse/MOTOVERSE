@@ -6,7 +6,6 @@
   <title>MotoVerse - Motorcycle Universe</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap');
-
     :root {
       --primary: #ff6b35;
       --secondary: #e91e63;
@@ -17,14 +16,12 @@
       --border: rgba(255, 255, 255, 0.2);
       --shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
     }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       font-family: 'Rajdhani', sans-serif;
     }
-
     body {
       background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
       color: white;
@@ -33,7 +30,6 @@
       min-width: 1200px;
       margin: 0 auto;
     }
-
     .orbitron { font-family: 'Orbitron', sans-serif; }
     .gradient-text {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -41,7 +37,6 @@
       background-clip: text;
       color: transparent;
     }
-
     .glass { 
       background: var(--glass); 
       border: 1px solid var(--border); 
@@ -56,7 +51,6 @@
     .hover-lift:hover { 
       transform: translateY(-12px); 
     }
-
     .fade-in {
       opacity: 0;
       transform: translateY(70px);
@@ -66,7 +60,6 @@
       opacity: 1; 
       transform: translateY(0); 
     }
-
     .loading-screen {
       position: fixed;
       inset: 0;
@@ -91,7 +84,6 @@
     @keyframes spin { 
       to { transform: rotate(360deg); } 
     }
-
     nav {
       position: sticky;
       top: 20px;
@@ -118,7 +110,6 @@
       color: var(--secondary); 
       text-shadow: 0 0 10px var(--secondary); 
     }
-
     .page {
       display: none;
       padding: 120px 30px;
@@ -128,7 +119,6 @@
     .page.active { 
       display: block; 
     }
-
     .hero {
       min-height: 110vh;
       text-align: center;
@@ -225,7 +215,6 @@
       50% { transform: scale(1.2); box-shadow: 0 0 50px var(--primary), 0 0 80px var(--secondary); }
       100% { transform: scale(1); box-shadow: 0 0 25px var(--primary), 0 0 50px var(--secondary); }
     }
-
     .btn {
       padding: 18px 35px;
       border-radius: 50px;
@@ -241,7 +230,6 @@
       transform: translateY(-8px);
       box-shadow: 0 0 40px var(--primary);
     }
-
     .grid {
       display: grid;
       gap: 30px;
@@ -269,7 +257,6 @@
       padding: 30px;
       text-align: center;
     }
-
     .modal {
       position: fixed;
       inset: 0;
@@ -341,7 +328,6 @@
     .spec-value {
       color: var(--primary);
     }
-
     .form-group {
       margin-bottom: 30px;
     }
@@ -379,7 +365,6 @@
     .form-group button:hover {
       background: var(--secondary);
     }
-
     footer {
       background: rgba(0, 0, 0, 0.9);
       padding: 60px 30px;
@@ -397,7 +382,6 @@
       margin: 25px auto;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 </head>
 <body>
   <div class="loading-screen" id="loadingScreen">
@@ -406,7 +390,6 @@
       <h1 class="orbitron neon">MotoVerse</h1>
     </div>
   </div>
-
   <nav class="glass">
     <ul>
       <li><a href="#" data-page="home">Home</a></li>
@@ -421,7 +404,6 @@
       <li><a href="#" data-page="contact">Contact</a></li>
     </ul>
   </nav>
-
   <div id="home" class="page active">
     <section class="hero">
       <img src="https://github.com/MotooVerse/MOTOVERSE/blob/main/download.jpg?raw=true" alt="Motorcycle on road" loading="lazy">
@@ -433,7 +415,6 @@
       </div>
     </section>
   </div>
-
   <div id="royal-enfield" class="page">
     <h2 class="section-title orbitron fade-in">Royal Enfield</h2>
     <h3 class="orbitron fade-in">Classic Series</h3>
@@ -461,7 +442,6 @@
       </article>
     </div>
   </div>
-
   <div id="bajaj-auto" class="page">
     <h2 class="section-title orbitron fade-in">Bajaj Auto</h2>
     <h3 class="orbitron fade-in">Performance Series</h3>
@@ -489,7 +469,6 @@
       </article>
     </div>
   </div>
-
   <div id="hero-motocorp" class="page">
     <h2 class="section-title orbitron fade-in">Hero MotoCorp</h2>
     <h3 class="orbitron fade-in">Commuter Series</h3>
@@ -517,7 +496,6 @@
       </article>
     </div>
   </div>
-
   <div id="tvs-motor" class="page">
     <h2 class="section-title orbitron fade-in">TVS Motor</h2>
     <h3 class="orbitron fade-in">Performance Series</h3>
@@ -545,7 +523,6 @@
       </article>
     </div>
   </div>
-
   <div id="mahindra" class="page">
     <h2 class="section-title orbitron fade-in">Mahindra</h2>
     <h3 class="orbitron fade-in">Touring Series</h3>
@@ -564,7 +541,6 @@
       </article>
     </div>
   </div>
-
   <div id="bmw-motorrad" class="page">
     <h2 class="section-title orbitron fade-in">BMW Motorrad</h2>
     <h3 class="orbitron fade-in">Adventure Series</h3>
@@ -592,7 +568,6 @@
       </article>
     </div>
   </div>
-
   <div id="ktm" class="page">
     <h2 class="section-title orbitron fade-in">KTM</h2>
     <h3 class="orbitron fade-in">Naked Series</h3>
@@ -620,7 +595,6 @@
       </article>
     </div>
   </div>
-
   <div id="reviews" class="page">
     <h2 class="section-title orbitron fade-in">Customer Reviews</h2>
     <div class="grid" id="review-list"></div>
@@ -633,7 +607,6 @@
       <button onclick="addReview()">Submit Review</button>
     </div>
   </div>
-
   <div id="contact" class="page">
     <h2 class="section-title orbitron fade-in">Contact Us</h2>
     <div class="card hover-lift fade-in">
@@ -644,12 +617,10 @@
       </div>
     </div>
   </div>
-
   <footer>
     <h3 class="footer-title orbitron"><span class="gradient-text">MOTO</span>VERSE</h3>
     <p class="footer-desc">Your ultimate motorcycle destination</p>
   </footer>
-
   <div id="modal" class="modal" role="dialog" aria-modal="true">
     <div class="modal-content glass">
       <div class="modal-header">
@@ -661,7 +632,6 @@
       </div>
     </div>
   </div>
-
   <script>
     const models = {
       'bullet-350': { name: 'Royal Enfield Bullet 350', price: '$2,200', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/download(1).jpeg?raw=true', specs: { Engine: '349cc Single', Power: '20 HP' } },
@@ -685,15 +655,12 @@
       'duke-200': { name: 'KTM Duke 200', price: '$3,000', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/download%20(19)%20(1).jpeg?raw=true', specs: { Engine: '199cc Single', Power: '25 HP' } },
       'adventure-390': { name: 'KTM Adventure 390', price: '$6,500', image: 'https://github.com/MotooVerse/MOTOVERSE/blob/main/download%20(19)%20(1).jpeg?raw=true', specs: { Engine: '373cc Single', Power: '43 HP' } }
     };
-
     const $ = (sel, base = document) => base.querySelector(sel);
     const $$ = (sel, base = document) => base.querySelectorAll(sel);
-
     function showPage(pageId) {
       $$('.page').forEach(page => page.classList.remove('active'));
       $(`#${pageId}`).classList.add('active');
     }
-
     function openModal(modelId) {
       const modal = $('#modal');
       const model = models[modelId];
@@ -712,74 +679,66 @@
       modal.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
     }
-
     function closeModal() {
       const modal = $('#modal');
       modal.classList.remove('active');
       modal.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
     }
-
-    async function updateReviews() {
-      const reviewList = $('#review-list');
-      reviewList.innerHTML = '<div class="loader" style="margin: 0 auto;"></div>';
-      let pyodide = await loadPyodide();
-      await pyodide.loadPackage("micropip");
-      await pyodide.runPythonAsync(`
-        from js import document, console
-        import asyncio
-        import json
-
-        class ReviewManager:
-            def __init__(self):
-                self.reviews = []
-
-            def add_review(self, text, name):
-                timestamp = document.getElementById("review-name").value  # Using name field as a placeholder for timestamp simulation
-                self.reviews.append({"text": text, "name": name, "timestamp": timestamp})
-                return self.reviews
-
-            def get_reviews(self):
-                return self.reviews if self.reviews else [{"text": "No reviews available.", "name": "System", "timestamp": "N/A"}]
-
-        review_manager = ReviewManager()
-        reviews = review_manager.get_reviews()
-        json.dumps(reviews)
-      `);
-      const reviews = pyodide.globals.get('reviews').toJs();
-      reviewList.innerHTML = reviews.map(r => `
-        <article class="card hover-lift fade-in">
-          <div class="card-content">
-            <p class="card-desc">${r.text} - ${r.name} (${r.timestamp})</p>
-          </div>
-        </article>
-      `).join('') || '<p>No reviews available.</p>';
-      reviewList.classList.add('visible');
+    function getReviews() {
+      const reviews = localStorage.getItem('motoverse-reviews');
+      return reviews ? JSON.parse(reviews) : [];
     }
-
-    async function addReview() {
+    function saveReviews(reviews) {
+      localStorage.setItem('motoverse-reviews', JSON.stringify(reviews));
+    }
+    function updateReviews() {
+      const reviewList = $('#review-list');
+      const reviews = getReviews();
+      
+      if (reviews.length === 0) {
+        reviewList.innerHTML = '<p class="fade-in">No reviews yet. Be the first to leave a review!</p>';
+      } else {
+        reviewList.innerHTML = reviews.map(r => `
+          <article class="card hover-lift fade-in">
+            <div class="card-content">
+              <p class="card-desc">${r.text}</p>
+              <p class="card-author">- ${r.name} (${r.timestamp})</p>
+            </div>
+          </article>
+        `).join('');
+      }
+      
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      }, { threshold: 0.2 });
+      
+      $$('#review-list .fade-in').forEach(el => observer.observe(el));
+    }
+    function addReview() {
       const text = $('#review-text').value.trim();
       const name = $('#review-name').value.trim();
+      
       if (!text || !name) {
         alert('Please fill in both review and name fields.');
         return;
       }
-      let pyodide = await loadPyodide();
-      await pyodide.loadPackage("micropip");
-      await pyodide.runPythonAsync(`
-        from js import document, console, alert
-        review_manager.add_review("${text}", "${name}")
-        console.log("Review added:", {"text": "${text}", "name": "${name}", "timestamp": "${name}"})
-        alert("Review submitted locally for simulation. Check console.")
-      `);
+      
+      const reviews = getReviews();
+      const timestamp = new Date().toLocaleDateString();
+      
+      reviews.push({ text, name, timestamp });
+      saveReviews(reviews);
+      
       $('#review-text').value = '';
       $('#review-name').value = '';
-      await updateReviews();
+      
+      updateReviews();
     }
-
     window.addEventListener('load', () => {
       setTimeout(() => $('#loadingScreen').classList.add('hidden'), 1800);
-
       const particlesDiv = $('#particles');
       for (let i = 0; i < 250; i++) {
         const particle = document.createElement('div');
@@ -792,7 +751,6 @@
         particle.style.animationDelay = `${Math.random() * 6}s`;
         particlesDiv.appendChild(particle);
       }
-
       $$('nav a').forEach(link => {
         link.addEventListener('click', (e) => {
           e.preventDefault();
@@ -801,7 +759,6 @@
           if (pageId === 'reviews') updateReviews();
         });
       });
-
       $$('.btn[data-page]').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -809,17 +766,14 @@
           showPage(pageId);
         });
       });
-
       $$('.card button').forEach(btn => {
         btn.addEventListener('click', () => {
           openModal(btn.getAttribute('data-model'));
         });
       });
-
       $('.modal-close').addEventListener('click', closeModal);
       $('#modal').addEventListener('click', (e) => e.target === $('#modal') && closeModal());
       document.addEventListener('keydown', (e) => e.key === 'Escape' && closeModal());
-
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) entry.target.classList.add('visible');
@@ -827,7 +781,6 @@
         });
       }, { threshold: 0.2 });
       $$('.fade-in').forEach(el => observer.observe(el));
-
       updateReviews();
     });
   </script>
